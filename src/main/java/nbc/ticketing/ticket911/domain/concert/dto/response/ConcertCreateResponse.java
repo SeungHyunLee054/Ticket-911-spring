@@ -19,4 +19,5 @@ public record ConcertCreateResponse(
 			concert.getStartTime()
 		);
 	}
+
 }
