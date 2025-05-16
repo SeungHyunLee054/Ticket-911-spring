@@ -1,36 +1,27 @@
 package nbc.ticketing.ticket911.domain.concert.service;
 
-import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
 
-import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
-import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertCreateResponse;
-import nbc.ticketing.ticket911.domain.concert.entity.Concert;
-import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
-import nbc.ticketing.ticket911.domain.stage.entity.Stage;
-import nbc.ticketing.ticket911.domain.user.entity.User;
+import org.springframework.stereotype.Component;
 
-@Service
-@RequiredArgsConstructor
+import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
+import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
+
+@Component
 public class ConcertDomainService {
 
-	private final ConcertRepository concertRepository;
+	public void validateCreatable(LocalDateTime startTime, LocalDateTime ticketOpen, LocalDateTime ticketClose) {
+		if (ticketOpen.isAfter(startTime)) {
+			throw new ConcertException(ConcertExceptionCode.TICKET_OPEN_AFTER_START);
+		}
 
-	public ConcertCreateResponse createConcert(User user, Stage stage, ConcertCreateRequest request) {
-		Concert concert = Concert.builder()
-			.user(user)
-			.stage(stage)
-			.title(request.title())
-			.description(request.description())
-			.startTime(request.startTime())
-			.ticketOpen(request.ticketOpen())
-			.ticketClose(request.ticketClose())
-			.isSoldOut(false)
-			.build();
+		if (ticketClose.isBefore(ticketOpen)) {
+			throw new ConcertException(ConcertExceptionCode.TICKET_CLOSE_BEFORE_OPEN);
+		}
 
-		Concert saved = concertRepository.save(concert);
-
-		return ConcertCreateResponse.from(saved);
-
+		if (startTime.isBefore(LocalDateTime.now())) {
+			throw new ConcertException(ConcertExceptionCode.PAST_CONCERT_DATE);
+		}
 	}
+
 }

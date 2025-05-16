@@ -27,7 +27,7 @@ public class ConcertController {
 		@Valid @RequestBody ConcertCreateRequest request,
 		@AuthenticationPrincipal AuthUser authUser
 	) {
-		ConcertCreateResponse response = concertService.create(authUser.getId(), request);
+		ConcertCreateResponse response = concertService.createConcert(authUser.getId(), request.stageId(), request);
 		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 
