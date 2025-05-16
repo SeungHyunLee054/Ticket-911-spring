@@ -24,14 +24,18 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException {
 		if (authException instanceof JwtTokenException jwtTokenException) {
+			log.error("exception : {}", jwtTokenException.getMessage(), jwtTokenException);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			objectMapper.writeValue(response.getWriter(),
 				CommonResponse.of(false, jwtTokenException.getHttpStatus().value(),
 					jwtTokenException.getMessage()));
+
+			return;
 		}
 
+		log.error("exception : {}", authException.getMessage(), authException);
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
