@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
 import nbc.ticketing.ticket911.infrastructure.security.jwt.exception.JwtTokenException;
-import nbc.ticketing.ticket911.infrastructure.security.jwt.exception.code.JwtTokenExceptionCode;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,12 +24,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException {
 		if (authException instanceof JwtTokenException jwtTokenException) {
-			JwtTokenExceptionCode errorCode = jwtTokenException.getErrorCode();
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			objectMapper.writeValue(response.getWriter(),
-				CommonResponse.of(errorCode.isSuccess(), errorCode.getStatus().value(), errorCode.getMessage()));
+				CommonResponse.of(false, jwtTokenException.getHttpStatus().value(),
+					jwtTokenException.getMessage()));
 		}
 
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
