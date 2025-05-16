@@ -2,6 +2,7 @@ package nbc.ticketing.ticket911.application.auth.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.auth.dto.request.SignInRequestDto;
@@ -15,6 +16,7 @@ import nbc.ticketing.ticket911.infrastructure.security.jwt.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AuthService {
 	private final UserRepository userRepository;
 	private final JwtUtil jwtUtil;

@@ -17,6 +17,7 @@ import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
