@@ -21,8 +21,8 @@ import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.user.constant.UserRole;
 import nbc.ticketing.ticket911.infrastructure.security.jwt.JwtUtil;
 import nbc.ticketing.ticket911.infrastructure.security.jwt.constant.JwtConstants;
-import nbc.ticketing.ticket911.infrastructure.security.jwt.exception.JwtTokenException;
-import nbc.ticketing.ticket911.infrastructure.security.jwt.exception.code.JwtTokenExceptionCode;
+import nbc.ticketing.ticket911.infrastructure.security.jwt.filter.exception.JwtFilterException;
+import nbc.ticketing.ticket911.infrastructure.security.jwt.filter.exception.code.JwtFilterExceptionCode;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -42,13 +42,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		try {
 			String accessHeader = request.getHeader(JwtConstants.AUTH_HEADER);
 			if (accessHeader == null || accessHeader.isBlank()) {
-				throw new JwtTokenException(JwtTokenExceptionCode.EMPTY_TOKEN);
+				throw new JwtFilterException(JwtFilterExceptionCode.EMPTY_TOKEN);
 			}
 
 			String accessToken = resolveToken(accessHeader);
 
 			if (jwtUtil.isTokenExpired(accessToken)) {
-				throw new JwtTokenException(JwtTokenExceptionCode.TOKEN_EXPIRED);
+				throw new JwtFilterException(JwtFilterExceptionCode.TOKEN_EXPIRED);
 			}
 
 			Claims claims = jwtUtil.parseToken(accessToken);
@@ -68,15 +68,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
 			filterChain.doFilter(request, response);
-		} catch (JwtTokenException jwtTokenException) {
+		} catch (JwtFilterException jwtFilterException) {
 			SecurityContextHolder.clearContext();
-			entryPoint.commence(request, response, jwtTokenException);
+			entryPoint.commence(request, response, jwtFilterException);
 		}
 	}
 
 	private String resolveToken(String authorization) {
 		if (!authorization.startsWith(JwtConstants.TOKEN_PREFIX)) {
-			throw new JwtTokenException(JwtTokenExceptionCode.MALFORMED_JWT_REQUEST);
+			throw new JwtFilterException(JwtFilterExceptionCode.MALFORMED_JWT_REQUEST);
 		}
 
 		return authorization.substring(JwtConstants.TOKEN_PREFIX.length());

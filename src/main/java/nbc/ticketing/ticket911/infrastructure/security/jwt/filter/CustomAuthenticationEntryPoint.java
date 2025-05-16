@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
-import nbc.ticketing.ticket911.infrastructure.security.jwt.exception.JwtTokenException;
+import nbc.ticketing.ticket911.infrastructure.security.jwt.filter.exception.JwtFilterException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,14 +23,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException authException) throws IOException {
-		if (authException instanceof JwtTokenException jwtTokenException) {
-			log.error("exception : {}", jwtTokenException.getMessage(), jwtTokenException);
+		if (authException instanceof JwtFilterException jwtFilterException) {
+			log.error("exception : {}", jwtFilterException.getMessage(), jwtFilterException);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			response.setContentType("application/json");
 			response.setCharacterEncoding("UTF-8");
 			objectMapper.writeValue(response.getWriter(),
-				CommonResponse.of(false, jwtTokenException.getHttpStatus().value(),
-					jwtTokenException.getMessage()));
+				CommonResponse.of(false, jwtFilterException.getHttpStatus().value(),
+					jwtFilterException.getMessage()));
 
 			return;
 		}
