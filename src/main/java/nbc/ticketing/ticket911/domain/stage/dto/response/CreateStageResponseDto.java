@@ -7,7 +7,7 @@ import nbc.ticketing.ticket911.domain.stage.status.Status;
 @Getter
 @Builder
 public class CreateStageResponseDto {
-    private String stageName;
-    private Long totalSeats;
-    private Status status;
+	private String stageName;
+	private Long totalSeats;
+	private Status status;
 }

@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CreateStageRequestDto {
-    @NotBlank(message = "공연장 이름은 필수 입력값 입니다.")
-    private String stageName;
+	@NotBlank(message = "공연장 이름은 필수 입력값 입니다.")
+	private String stageName;
 }
