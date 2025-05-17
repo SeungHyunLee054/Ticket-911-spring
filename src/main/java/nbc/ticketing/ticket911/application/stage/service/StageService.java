@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.CreateStageResponseDto;
+import nbc.ticketing.ticket911.domain.stage.dto.response.GetStageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
 import nbc.ticketing.ticket911.domain.stage.status.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,5 +35,14 @@ public class StageService {
                 .totalSeats(stage.getTotalSeat())
                 .status(stage.getStatus())
                 .build();
+    }
+
+    public Page<GetStageResponseDto> getStages(String keyword, Pageable pageable) {
+        Page<Stage> stagePage = stageRepository.findByStageNameContaining(keyword, pageable);
+        return stagePage.map(stage -> GetStageResponseDto.builder()
+                .stageName(stage.getStageName())
+                .totalSeats(stage.getTotalSeat())
+                .status(stage.getStatus())
+                .build());
     }
 }
