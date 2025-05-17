@@ -13,19 +13,27 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.RequiredArgsConstructor;
+import nbc.ticketing.ticket911.infrastructure.security.jwt.JwtUtil;
+import nbc.ticketing.ticket911.infrastructure.security.jwt.filter.CustomAuthenticationEntryPoint;
+import nbc.ticketing.ticket911.infrastructure.security.jwt.filter.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-	private final ObjectMapper objectMapper;
+	private final CustomAuthenticationEntryPoint entryPoint;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+	public SecurityConfig(ObjectMapper objectMapper, JwtUtil jwtUtil) {
+		this.entryPoint = new CustomAuthenticationEntryPoint(objectMapper);
+		this.jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil, entryPoint);
+	}
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,6 +53,9 @@ public class SecurityConfig {
 					"/error"
 				).permitAll()
 				.anyRequest().authenticated())
+			.exceptionHandling(exception ->
+				exception.authenticationEntryPoint(entryPoint))
+			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
 	}
 

@@ -26,3 +26,13 @@ spring:
 redis:
   host: localhost
   port: 6379
+
+jwt:
+  token:
+    access:
+      second: 60
+      minute: 60
+      hour: 12
+
+  secret:
+    key: secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey
