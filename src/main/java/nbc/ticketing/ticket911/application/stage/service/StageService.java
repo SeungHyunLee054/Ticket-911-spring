@@ -1,5 +1,6 @@
 package nbc.ticketing.ticket911.application.stage.service;
 
+import nbc.ticketing.ticket911.domain.stage.dto.request.UpdateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.exception.StageException;
 import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
@@ -59,5 +60,23 @@ public class StageService {
 	private Stage verifyStage(Long stageId){
 		return stageRepository.findById(stageId)
 				.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
+	}
+
+	@Transactional
+	public StageResponseDto updateService(Long stageId, UpdateStageRequestDto updateStageRequestDto) {
+		Stage stage = verifyStage(stageId);
+
+		if(updateStageRequestDto.getStageName() != null){
+			stage.updateStageName(updateStageRequestDto.getStageName());
+		}
+		if(updateStageRequestDto.getStatus() != null){
+			stage.updateStatus(updateStageRequestDto.getStatus());
+		}
+
+		return StageResponseDto.builder()
+				.stageName(stage.getStageName())
+				.totalSeats(stage.getTotalSeat())
+				.status(stage.getStatus())
+				.build();
 	}
 }

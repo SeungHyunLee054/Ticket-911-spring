@@ -1,6 +1,8 @@
 package nbc.ticketing.ticket911.domain.stage.controller;
 
+import nbc.ticketing.ticket911.domain.stage.dto.request.UpdateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
+import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -48,6 +50,16 @@ public class StageController {
 		StageResponseDto stageResponseDto = stageService.getStage(stageId);
 
 		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "공연장 단건 조회 성공", stageResponseDto));
+	}
+
+	@PatchMapping("/{stageId}")
+	public ResponseEntity<CommonResponse<StageResponseDto>> updateStage(
+			@PathVariable Long stageId,
+			@RequestBody @Valid UpdateStageRequestDto updateStageRequestDto
+	){
+		StageResponseDto stageResponseDto = stageService.updateService(stageId, updateStageRequestDto);
+
+		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "공연장 수정 성공", stageResponseDto));
 	}
 
 }
