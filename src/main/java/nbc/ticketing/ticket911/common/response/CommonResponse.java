@@ -17,6 +17,7 @@ public class CommonResponse<T> {
 	private boolean success;
 	private int status;
 	private String message;
+	private Results<T> results;
 	private T result;
 
 	public static <T> CommonResponse<T> of(boolean success, int status, String message, T result) {
@@ -36,12 +37,12 @@ public class CommonResponse<T> {
 			.build();
 	}
 
-	public static <T> CommonResponse<Results<T>> ofPage(boolean success, int status, String message, Page<T> page) {
-		return CommonResponse.<Results<T>>builder()
+	public static <T> CommonResponse<T> ofPage(boolean success, int status, String message, Page<T> page) {
+		return CommonResponse.<T>builder()
 			.success(success)
 			.status(status)
 			.message(message)
-			.result(Results.<T>builder()
+			.results(Results.<T>builder()
 				.totalElements(page.getTotalElements())
 				.totalPages(page.getTotalPages())
 				.hasNextPage(page.hasNext())
