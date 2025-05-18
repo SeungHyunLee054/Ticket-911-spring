@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum StageExceptionCode {
 	;
-
 	private final boolean success;
 	private final HttpStatus status;
 	private final String message;
