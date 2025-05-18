@@ -1,6 +1,8 @@
 package nbc.ticketing.ticket911.application.stage.service;
 
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
+import nbc.ticketing.ticket911.domain.stage.exception.StageException;
+import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,5 +45,19 @@ public class StageService {
 			.totalSeats(stage.getTotalSeat())
 			.status(stage.getStatus())
 			.build());
+	}
+
+	public StageResponseDto getStage(Long stageId) {
+		Stage stage = verifyStage(stageId);
+		return StageResponseDto.builder()
+				.stageName(stage.getStageName())
+				.totalSeats(stage.getTotalSeat())
+				.status(stage.getStatus())
+				.build();
+	}
+
+	private Stage verifyStage(Long stageId){
+		return stageRepository.findById(stageId)
+				.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
 	}
 }
