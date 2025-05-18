@@ -40,13 +40,13 @@ public class StageController {
 	}
 
 	@GetMapping
-	public ResponseEntity<CommonResponse<Page<StageResponseDto>>> getStages(
+	public ResponseEntity<CommonResponse<StageResponseDto>> getStages(
 		@RequestParam(defaultValue = "") String keyword,
 		@PageableDefault(size = 10, sort = "stageName", direction = Sort.Direction.ASC) Pageable pageable
 	) {
 		Page<StageResponseDto> stageResponseDtos = stageService.getStages(keyword, pageable);
 
-		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "전체 공연장 조회 성공", stageResponseDtos));
+		return ResponseEntity.ok(CommonResponse.ofPage(true, HttpStatus.OK.value(), "전체 공연장 조회 성공", stageResponseDtos));
 	}
 
 	@GetMapping("/{stageId}")
