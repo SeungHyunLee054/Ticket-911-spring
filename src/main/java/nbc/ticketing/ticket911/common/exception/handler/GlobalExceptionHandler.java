@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.common.exception.BaseException;
 import nbc.ticketing.ticket911.common.exception.dto.ValidationError;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
-import nbc.ticketing.ticket911.common.response.CommonResponses;
 
 @Slf4j
 @RestControllerAdvice
@@ -30,7 +29,7 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<CommonResponses<ValidationError>> inputValidationExceptionHandler(
+	public ResponseEntity<CommonResponse<List<ValidationError>>> inputValidationExceptionHandler(
 		MethodArgumentNotValidException methodArgumentNotValidException
 	) {
 		log.error("exception : {}", methodArgumentNotValidException.getMessage(), methodArgumentNotValidException);
@@ -45,7 +44,7 @@ public class GlobalExceptionHandler {
 			.toList();
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-			.body(CommonResponses.of(false, HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.",
+			.body(CommonResponse.of(false, HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.",
 				validationErrors));
 	}
 
