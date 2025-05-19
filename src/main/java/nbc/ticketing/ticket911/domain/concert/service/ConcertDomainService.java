@@ -80,7 +80,7 @@ public class ConcertDomainService {
 	 * @param ticketOpen 티켓 오픈 시간
 	 * @param startTime  공연 시작 시간
 	 */
-	public void validateTicketOpenBeforeStartTime(LocalDateTime ticketOpen, LocalDateTime startTime) {
+	private void validateTicketOpenBeforeStartTime(LocalDateTime ticketOpen, LocalDateTime startTime) {
 		if (ticketOpen.isAfter(startTime)) {
 			throw new ConcertException(ConcertExceptionCode.TICKET_OPEN_AFTER_START);
 		}
@@ -92,7 +92,7 @@ public class ConcertDomainService {
 	 * @param ticketOpen  티켓 오픈 시간
 	 * @param ticketClose 티켓 마감 시간
 	 */
-	public void validateTicketCloseAfterOpenTime(LocalDateTime ticketOpen, LocalDateTime ticketClose) {
+	private void validateTicketCloseAfterOpenTime(LocalDateTime ticketOpen, LocalDateTime ticketClose) {
 		if (ticketClose.isBefore(ticketOpen)) {
 			throw new ConcertException(ConcertExceptionCode.TICKET_CLOSE_BEFORE_OPEN);
 		}
@@ -103,7 +103,7 @@ public class ConcertDomainService {
 	 *
 	 * @param startTime 공연 시작 시간
 	 */
-	public void validateConcertNotInPast(LocalDateTime startTime) {
+	private void validateConcertNotInPast(LocalDateTime startTime) {
 		if (startTime.isBefore(LocalDateTime.now())) {
 			throw new ConcertException(ConcertExceptionCode.PAST_CONCERT_DATE);
 		}
