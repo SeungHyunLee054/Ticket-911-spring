@@ -13,7 +13,7 @@ import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 import nbc.ticketing.ticket911.domain.stage.exception.StageException;
 import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
 import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
-import nbc.ticketing.ticket911.domain.stage.status.Status;
+import nbc.ticketing.ticket911.domain.stage.status.StageStatus;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class StageService {
 		Stage stage = Stage.builder()
 			.stageName(createStageRequestDto.getStageName())
 			.totalSeat(0L)
-			.status(Status.AVAILABLE)
+			.stageStatus(StageStatus.AVAILABLE)
 			.build();
 
 		Stage savedStage = stageRepository.save(stage);
@@ -52,8 +52,8 @@ public class StageService {
 		if (updateStageRequestDto.getStageName() != null) {
 			stage.updateStageName(updateStageRequestDto.getStageName());
 		}
-		if (updateStageRequestDto.getStatus() != null) {
-			stage.updateStatus(updateStageRequestDto.getStatus());
+		if (updateStageRequestDto.getStageStatus() != null) {
+			stage.updateStageStatus(updateStageRequestDto.getStageStatus());
 		}
 
 		return StageResponseDto.from(stage);

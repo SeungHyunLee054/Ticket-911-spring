@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbc.ticketing.ticket911.common.audit.BaseEntity;
 import nbc.ticketing.ticket911.domain.seat.entity.Seat;
-import nbc.ticketing.ticket911.domain.stage.status.Status;
+import nbc.ticketing.ticket911.domain.stage.status.StageStatus;
 
 @Entity
 @Getter
@@ -37,7 +37,7 @@ public class Stage extends BaseEntity {
 	private String stageName;
 
 	@Column(nullable = false)
-	private Status status;
+	private StageStatus stageStatus;
 
 	@Builder.Default
 	@OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,8 +51,8 @@ public class Stage extends BaseEntity {
 		this.totalSeat = totalSeat;
 	}
 
-	public void updateStatus(Status status) {
-		this.status = status;
+	public void updateStageStatus(StageStatus stageStatus) {
+		this.stageStatus = stageStatus;
 	}
 
 }
