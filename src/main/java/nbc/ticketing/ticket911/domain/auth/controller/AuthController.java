@@ -28,4 +28,11 @@ public class AuthController {
 
 		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "로그인 성공", responseDto));
 	}
+
+	@PostMapping("/signout")
+	public ResponseEntity<CommonResponse<Void>> signOut() {
+		authService.signOut();
+
+		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "로그아웃 성공"));
+	}
 }
