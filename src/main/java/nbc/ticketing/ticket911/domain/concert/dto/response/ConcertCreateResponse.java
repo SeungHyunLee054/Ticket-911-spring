@@ -2,14 +2,17 @@ package nbc.ticketing.ticket911.domain.concert.dto.response;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 
-public record ConcertCreateResponse(
-	Long id,
-	String title,
-	String description,
-	LocalDateTime startTime
-) {
+@Getter
+@AllArgsConstructor
+public class ConcertCreateResponse {
+	private Long id;
+	private String title;
+	private String description;
+	private LocalDateTime startTime;
 
 	public static ConcertCreateResponse from(Concert concert) {
 		return new ConcertCreateResponse(
@@ -19,5 +22,4 @@ public record ConcertCreateResponse(
 			concert.getStartTime()
 		);
 	}
-
 }
