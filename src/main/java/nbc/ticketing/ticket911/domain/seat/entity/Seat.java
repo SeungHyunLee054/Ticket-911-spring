@@ -42,4 +42,11 @@ public class Seat extends BaseEntity {
 		stage.getSeats().add(this);
 	}
 
+	public void updateSeatName(String seatName) {
+		this.seatName = seatName;
+	}
+
+	public void updateSeatPrice(Long seatPrice) {
+		this.seatPrice = seatPrice;
+	}
 }

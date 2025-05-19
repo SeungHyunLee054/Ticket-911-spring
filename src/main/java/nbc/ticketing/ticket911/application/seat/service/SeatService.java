@@ -10,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.application.stage.service.StageService;
 import nbc.ticketing.ticket911.domain.seat.dto.request.CreateSeatRequestDto;
+import nbc.ticketing.ticket911.domain.seat.dto.request.UpdateSeatRequestDto;
 import nbc.ticketing.ticket911.domain.seat.dto.response.SeatResponseDto;
 import nbc.ticketing.ticket911.domain.seat.entity.Seat;
+import nbc.ticketing.ticket911.domain.seat.exception.SeatException;
+import nbc.ticketing.ticket911.domain.seat.exception.code.SeatExceptionCode;
 import nbc.ticketing.ticket911.domain.seat.repository.SeatRepository;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 
@@ -55,4 +58,44 @@ public class SeatService {
 			.map(SeatResponseDto::from)
 			.collect(Collectors.toList());
 	}
+
+	@SuppressWarnings("checkstyle:WhitespaceAround")
+	@Transactional
+	public SeatResponseDto updateSeat(Long stageId, Long seatId, UpdateSeatRequestDto updateSeatRequestDto) {
+		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
+		Seat seat = getSeatBySeatIdOrElseThrow(seatId);
+
+		if (seat.getStage() != stage) {
+			throw new SeatException(SeatExceptionCode.SEAT_NOT_BELONG_TO_STAGE);
+		}
+
+		if (updateSeatRequestDto.getSeatName() != null) {
+			seat.updateSeatName(updateSeatRequestDto.getSeatName());
+		}
+
+		if (updateSeatRequestDto.getSeatPrice() != null) {
+			seat.updateSeatPrice(updateSeatRequestDto.getSeatPrice());
+		}
+
+		return SeatResponseDto.from(seat);
+
+	}
+
+	public void deleteSeat(Long stageId, Long seatId) {
+		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
+		Seat seat = getSeatBySeatIdOrElseThrow(seatId);
+
+		if (seat.getStage() != stage) {
+			throw new SeatException(SeatExceptionCode.SEAT_NOT_BELONG_TO_STAGE);
+		}
+
+		seatRepository.deleteById(seatId);
+
+	}
+
+	private Seat getSeatBySeatIdOrElseThrow(Long seatId) {
+		return seatRepository.findById(seatId)
+			.orElseThrow(() -> new SeatException(SeatExceptionCode.SEAT_NOT_FOUND));
+	}
+
 }
