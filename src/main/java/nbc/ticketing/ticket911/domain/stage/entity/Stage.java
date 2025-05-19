@@ -45,4 +45,16 @@ public class Stage extends BaseEntity {
 	@JoinColumn(name = "seat_id", nullable = false)
 	private List<Seat> seats = new ArrayList<>();
 
+	public void updateStageName(String stageName){
+		this.stageName = stageName;
+	}
+
+	public void updateTotalSeat(Long totalSeat){
+		this.totalSeat = totalSeat;
+	}
+
+	public void updateStatus(Status status){
+		this.status = status;
+	}
+
 }
