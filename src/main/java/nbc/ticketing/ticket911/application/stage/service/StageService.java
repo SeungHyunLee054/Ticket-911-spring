@@ -10,6 +10,8 @@ import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.request.UpdateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
+import nbc.ticketing.ticket911.domain.stage.exception.StageException;
+import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
 import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
 import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
 import nbc.ticketing.ticket911.domain.stage.status.Status;
@@ -41,13 +43,13 @@ public class StageService {
 	}
 
 	public StageResponseDto getStage(Long stageId) {
-		Stage stage = stageDomainService.verifyStage(stageId);
+		Stage stage = verifyStage(stageId);
 		return StageResponseDto.from(stage);
 	}
 
 	@Transactional
 	public StageResponseDto updateService(Long stageId, UpdateStageRequestDto updateStageRequestDto) {
-		Stage stage = stageDomainService.verifyStage(stageId);
+		Stage stage = verifyStage(stageId);
 
 		if (updateStageRequestDto.getStageName() != null) {
 			stage.updateStageName(updateStageRequestDto.getStageName());
@@ -57,6 +59,11 @@ public class StageService {
 		}
 
 		return StageResponseDto.from(stage);
+	}
+
+	public Stage verifyStage(Long stageId) {
+		return stageRepository.findById(stageId)
+			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
 	}
 
 }
