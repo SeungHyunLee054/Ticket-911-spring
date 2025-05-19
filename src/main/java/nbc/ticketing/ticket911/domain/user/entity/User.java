@@ -19,7 +19,7 @@ import nbc.ticketing.ticket911.domain.user.constant.UserRole;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,5 +43,25 @@ public class User extends BaseEntity {
 	private Set<UserRole> roles = new HashSet<>();
 
 	private boolean isDeleted;
+
+	public void changeNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void changePassword(String password) {
+		this.password = password;
+	}
+
+	public boolean validatePassword(String password) {
+		return this.password.equals(password);
+	}
+
+	public void withdraw(){
+		this.isDeleted = true;
+	}
+
+	public void addPoint(int point){
+		this.point += point;
+	}
 
 }
