@@ -1,5 +1,7 @@
 package nbc.ticketing.ticket911.application.concert.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,11 @@ import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
 import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
 import nbc.ticketing.ticket911.domain.concert.service.ConcertDomainService;
+import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
+import nbc.ticketing.ticket911.domain.concertseat.repository.ConcertSeatRepository;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
+import nbc.ticketing.ticket911.domain.stage.exception.StageException;
+import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
 import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 import nbc.ticketing.ticket911.domain.user.exception.UserException;
@@ -32,14 +38,14 @@ public class ConcertService {
 	private final UserRepository userRepository;
 	private final StageRepository stageRepository;
 	private final ConcertDomainService concertDomainService;
+	private final ConcertSeatRepository concertSeatRepository;
 
 	@Transactional
 	public ConcertCreateResponse createConcert(Long userId, Long stageId, ConcertCreateRequest request) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
-		Stage stage = stageRepository.findById(stageId)
-			.orElseThrow(() -> new IllegalArgumentException("공연장이 존재하지 않습니다."));
-
+		Stage stage = stageRepository.findByIdWithSeats(stageId)
+			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
 		concertDomainService.validateCreatable(request.getStartTime(), request.getTicketOpen(), request.getTicketClose());
 
 		Concert concert = Concert.builder()
@@ -54,6 +60,12 @@ public class ConcertService {
 			.build();
 
 		concertRepository.save(concert);
+
+		List<ConcertSeat> concertSeats = stage.getSeats().stream()
+			.map(seat -> ConcertSeat.of(concert, seat))
+			.toList();
+
+		concertSeatRepository.saveAll(concertSeats);
 
 		return ConcertCreateResponse.from(concert);
 
