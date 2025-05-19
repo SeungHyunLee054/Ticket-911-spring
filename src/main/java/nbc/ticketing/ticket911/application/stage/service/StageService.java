@@ -41,13 +41,13 @@ public class StageService {
 	}
 
 	public StageResponseDto getStage(Long stageId) {
-		Stage stage = verifyStage(stageId);
+		Stage stage = getStageByStageIdOrElseThrow(stageId);
 		return StageResponseDto.from(stage);
 	}
 
 	@Transactional
 	public StageResponseDto updateService(Long stageId, UpdateStageRequestDto updateStageRequestDto) {
-		Stage stage = verifyStage(stageId);
+		Stage stage = getStageByStageIdOrElseThrow(stageId);
 
 		if (updateStageRequestDto.getStageName() != null) {
 			stage.updateStageName(updateStageRequestDto.getStageName());
@@ -59,7 +59,7 @@ public class StageService {
 		return StageResponseDto.from(stage);
 	}
 
-	private Stage verifyStage(Long stageId) {
+	private Stage getStageByStageIdOrElseThrow(Long stageId) {
 		return stageRepository.findById(stageId)
 			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
 	}
