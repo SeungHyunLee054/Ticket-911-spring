@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
+import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
 
@@ -23,5 +24,16 @@ public class ConcertDomainService {
 			throw new ConcertException(ConcertExceptionCode.PAST_CONCERT_DATE);
 		}
 	}
+
+	public void validateUpdatable(Concert concert, Long currentUserId) {
+		if (!concert.getUser().getId().equals(currentUserId)) {
+			throw new ConcertException(ConcertExceptionCode.NOT_ENOUGH_ROLE);
+		}
+
+		if (concert.getStartTime().isBefore(LocalDateTime.now())) {
+			throw new ConcertException(ConcertExceptionCode.CONCERT_ALREADY_STARTED);
+		}
+	}
+
 
 }

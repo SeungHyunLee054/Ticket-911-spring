@@ -1,7 +1,5 @@
 package nbc.ticketing.ticket911.application.concert.service;
 
-import java.util.Optional;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -10,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertUpdateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertCreateResponse;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertDetailResponse;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertPageResponse;
@@ -69,6 +68,19 @@ public class ConcertService {
 	public ConcertDetailResponse getConcertDetail(Long concertId) {
 		Concert concert = concertRepository.findById(concertId)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+
+		return ConcertDetailResponse.from(concert);
+	}
+
+	@Transactional
+	public ConcertDetailResponse updateConcert(Long concertId, Long userId,ConcertUpdateRequest request) {
+		Concert concert = concertRepository.findById(concertId)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+
+		concertDomainService.validateUpdatable(concert, userId);
+		concertDomainService.validateCreatable(request.startTime(), request.ticketOpen(), request.ticketClose());
+
+		concert.update(request);
 
 		return ConcertDetailResponse.from(concert);
 	}

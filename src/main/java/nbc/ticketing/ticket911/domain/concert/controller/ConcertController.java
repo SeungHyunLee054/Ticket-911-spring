@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import nbc.ticketing.ticket911.application.concert.service.ConcertService;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertUpdateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertCreateResponse;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertDetailResponse;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertPageResponse;
@@ -53,6 +55,16 @@ public class ConcertController {
 		@PathVariable Long concertId
 	) {
 		ConcertDetailResponse response = concertService.getConcertDetail(concertId);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
+	@PatchMapping("/{concertId}")
+	public ResponseEntity<ConcertDetailResponse> updateConcert(
+		@PathVariable Long concertId,
+		@Valid @RequestBody ConcertUpdateRequest request,
+		@AuthenticationPrincipal AuthUser authUser
+	) {
+		ConcertDetailResponse response = concertService.updateConcert(concertId, authUser.getId(), request);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 }

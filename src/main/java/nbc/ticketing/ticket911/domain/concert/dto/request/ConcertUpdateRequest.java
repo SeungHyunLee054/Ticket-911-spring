@@ -4,14 +4,9 @@ import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
-public record ConcertCreateRequest(
-	@NotBlank
-	Long stageId,
-
+public record ConcertUpdateRequest(
 	@NotBlank(message = "제목을 입력해주세요")
-	@Size(min = 3, max = 20, message = "제목은 3글자 이상 20글자 이하입니다")
 	String title,
 
 	@NotBlank(message = "내용을 입력해주세요")
