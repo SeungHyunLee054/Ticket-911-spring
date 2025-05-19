@@ -1,5 +1,7 @@
 package nbc.ticketing.ticket911.application.concertseat.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,7 +10,7 @@ import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
 import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
-import nbc.ticketing.ticket911.domain.concertseat.controller.ConcertSeatController;
+import nbc.ticketing.ticket911.domain.concertseat.dto.response.ConcertSeatResponse;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.concertseat.exception.ConcertSeatException;
 import nbc.ticketing.ticket911.domain.concertseat.exception.code.ConcertSeatExceptionCode;
@@ -42,4 +44,15 @@ public class ConcertSeatService {
 		concertSeatDomainService.reserve(concertSeat);
 	}
 
+	@Transactional(readOnly = true)
+	public List<ConcertSeatResponse> getSeatsByConcert(Long concertId) {
+
+		concertSeatDomainService.validateExistence(concertId);
+
+		List<ConcertSeat> seats = concertSeatRepository.findByConcertId(concertId);
+
+		return seats.stream()
+			.map(ConcertSeatResponse::from)
+			.toList();
+	}
 }

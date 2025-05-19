@@ -1,19 +1,16 @@
 package nbc.ticketing.ticket911.domain.concertseat.controller;
 
-import org.springframework.http.HttpStatus;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.application.concertseat.service.ConcertSeatService;
-import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
-import nbc.ticketing.ticket911.domain.concertseat.dto.request.ConcertSeatReserveRequest;
+import nbc.ticketing.ticket911.domain.concertseat.dto.response.ConcertSeatResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,13 +19,11 @@ public class ConcertSeatController {
 
 	private final ConcertSeatService concertSeatService;
 
-	@PostMapping("/bookings")
-	public ResponseEntity<Void> reserveConcertSeat(
-		@AuthenticationPrincipal AuthUser authUser,
-		@PathVariable Long concertId,
-		@RequestBody @Valid ConcertSeatReserveRequest request
+	@GetMapping("/seats")
+	public ResponseEntity<List<ConcertSeatResponse>> getConcertSeats(
+		@PathVariable Long concertId
 	) {
-		concertSeatService.reserveConcertSeat(authUser.getId(), concertId, request.getSeatId());
-		return ResponseEntity.status(HttpStatus.OK).build();
+		List<ConcertSeatResponse> seats = concertSeatService.getSeatsByConcert(concertId);
+		return ResponseEntity.ok(seats);
 	}
 }
