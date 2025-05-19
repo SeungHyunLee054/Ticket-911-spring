@@ -33,8 +33,6 @@ public class UserController {
 	public ResponseEntity<CommonResponse<UserResponseDto>> signup(
 		@Valid @RequestBody SignupRequestDto signupRequestDto
 	) {
-
-
 		UserResponseDto responseDto = userService.signUp(signupRequestDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
