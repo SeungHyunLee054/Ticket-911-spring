@@ -55,6 +55,7 @@ public class ConcertRepositoryImpl implements ConcertQueryRepository {
 			.from(concert)
 			.join(concert.stage, stage)
 			.where(
+				notDeleted(),
 				titleContains(condition.title()),
 				startTimeGte(condition.startTimeFrom()),
 				startTimeLte(condition.startTimeTo()),
@@ -83,5 +84,10 @@ public class ConcertRepositoryImpl implements ConcertQueryRepository {
 			? QConcert.concert.stage.stageName.contains(stageName)
 			: null;
 	}
+
+	private BooleanExpression notDeleted() {
+		return concert.deletedAt.isNull();
+	}
+
 
 }

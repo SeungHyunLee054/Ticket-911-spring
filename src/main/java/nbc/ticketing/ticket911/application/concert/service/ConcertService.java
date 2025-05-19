@@ -67,6 +67,7 @@ public class ConcertService {
 	@Transactional(readOnly = true)
 	public ConcertDetailResponse getConcertDetail(Long concertId) {
 		Concert concert = concertRepository.findById(concertId)
+			.filter(c -> c.getDeletedAt() == null)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 
 		return ConcertDetailResponse.from(concert);
