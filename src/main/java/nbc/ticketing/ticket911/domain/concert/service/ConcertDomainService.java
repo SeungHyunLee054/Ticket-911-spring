@@ -12,17 +12,11 @@ import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCod
 public class ConcertDomainService {
 
 	public void validateCreatable(LocalDateTime startTime, LocalDateTime ticketOpen, LocalDateTime ticketClose) {
-		if (ticketOpen.isAfter(startTime)) {
-			throw new ConcertException(ConcertExceptionCode.TICKET_OPEN_AFTER_START);
-		}
+		validateAfterStartTime(startTime);
 
-		if (ticketClose.isBefore(ticketOpen)) {
-			throw new ConcertException(ConcertExceptionCode.TICKET_CLOSE_BEFORE_OPEN);
-		}
+		validateBeforeEndTime(ticketOpen);
 
-		if (startTime.isBefore(LocalDateTime.now())) {
-			throw new ConcertException(ConcertExceptionCode.PAST_CONCERT_DATE);
-		}
+		validateBeforeStartTime(ticketClose);
 	}
 
 	public void validateUpdatable(Concert concert, Long userId) {
@@ -46,5 +40,22 @@ public class ConcertDomainService {
 		}
 	}
 
+	private void validateAfterStartTime(LocalDateTime startTime) {
+		if (startTime.isAfter(LocalDateTime.now())) {
+			throw new ConcertException(ConcertExceptionCode.TICKET_OPEN_AFTER_START);
+		}
+	}
+
+	private void validateBeforeEndTime(LocalDateTime endTime) {
+		if (endTime.isBefore(LocalDateTime.now())) {
+			throw new ConcertException(ConcertExceptionCode.TICKET_CLOSE_BEFORE_OPEN);
+		}
+	}
+
+	private void validateBeforeStartTime(LocalDateTime startTime) {
+		if (startTime.isBefore(LocalDateTime.now())) {
+			throw new ConcertException(ConcertExceptionCode.PAST_CONCERT_DATE);
+		}
+	}
 
 }
