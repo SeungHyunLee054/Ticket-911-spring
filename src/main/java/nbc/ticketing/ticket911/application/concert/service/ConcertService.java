@@ -73,7 +73,7 @@ public class ConcertService {
 	}
 
 	@Transactional
-	public ConcertDetailResponse updateConcert(Long concertId, Long userId,ConcertUpdateRequest request) {
+	public ConcertDetailResponse updateConcert(Long concertId, Long userId, ConcertUpdateRequest request) {
 		Concert concert = concertRepository.findById(concertId)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 
