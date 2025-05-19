@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +20,12 @@ import nbc.ticketing.ticket911.domain.seat.entity.Seat;
 @Entity
 @Getter
 @Builder
-@Table(name = "concert_seats")
+@Table(
+	name = "concert_seats",
+	uniqueConstraints = {
+		@UniqueConstraint(name = "uk_concert_seat", columnNames = {"concert_id", "seat_id"})
+	}
+)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConcertSeat {
