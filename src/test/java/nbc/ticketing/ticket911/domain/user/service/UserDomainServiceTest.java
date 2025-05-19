@@ -152,11 +152,11 @@ class UserDomainServiceTest {
 		@DisplayName("비밀번호 정상 수정")
 		void validateAndUpdatePassword_Success() {
 			// given
-			String oldPassword = "encodedPassword";
 			String newPassword = "newPassword123!";
+			boolean isPasswordCorrect = true;
 
 			// when
-			userDomainService.validateAndUpdatePassword(user, oldPassword, newPassword);
+			userDomainService.validateAndUpdatePassword(user, newPassword, isPasswordCorrect);
 
 			// then
 			assertThat(user.getPassword()).isEqualTo(newPassword);
@@ -166,12 +166,12 @@ class UserDomainServiceTest {
 		@DisplayName("이전 비밀번호가 일치하지 않는 경우 예외 발생")
 		void validateAndUpdatePassword_WrongPassword_ThrowsException() {
 			// given
-			String oldPassword = "wrongPassword";
 			String newPassword = "newPassword";
+			boolean isPasswordCorrect = false;
 
 			// When
 			UserException exception = assertThrows(UserException.class,
-				() -> userDomainService.validateAndUpdatePassword(user, oldPassword, newPassword));
+				() -> userDomainService.validateAndUpdatePassword(user, newPassword, isPasswordCorrect));
 
 			// Then
 			assertThat(exception.getErrorCode())

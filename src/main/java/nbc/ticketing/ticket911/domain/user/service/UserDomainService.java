@@ -42,8 +42,8 @@ public class UserDomainService {
 		user.changeNickname(newNickname);
 	}
 
-	public void validateAndUpdatePassword(User user, String oldEncodedPassword, String newEncodedPassword) {
-		if (!user.validatePassword(oldEncodedPassword)) {
+	public void validateAndUpdatePassword(User user, String newEncodedPassword, boolean isPasswordCorrect) {
+		if (!isPasswordCorrect) {
 			throw new UserException(UserExceptionCode.WRONG_PASSWORD);
 		}
 

@@ -52,10 +52,6 @@ public class User extends BaseEntity {
 		this.password = password;
 	}
 
-	public boolean validatePassword(String password) {
-		return this.password.equals(password);
-	}
-
 	public void withdraw(){
 		this.isDeleted = true;
 	}

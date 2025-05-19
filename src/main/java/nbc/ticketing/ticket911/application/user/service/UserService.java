@@ -70,8 +70,8 @@ public class UserService {
 		if (updateUserRequestDto.getPasswordUpdateForm() != null) {
 			userDomainService.validateAndUpdatePassword(
 				user,
-				passwordEncoder.encode(updateUserRequestDto.getOldPassword()),
-				passwordEncoder.encode(updateUserRequestDto.getNewPassword())
+				passwordEncoder.encode(updateUserRequestDto.getNewPassword()),
+				passwordEncoder.matches(updateUserRequestDto.getOldPassword(), user.getPassword())
 			);
 		}
 
