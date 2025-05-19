@@ -32,4 +32,5 @@ public class ConcertSeatDomainService {
 	public void cancel(ConcertSeat seat) {
 		seat.markUnreserved();
 	}
+
 }

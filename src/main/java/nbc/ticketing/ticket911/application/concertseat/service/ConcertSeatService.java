@@ -3,6 +3,7 @@ package nbc.ticketing.ticket911.application.concertseat.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class ConcertSeatService {
 		concertSeatDomainService.reserve(concertSeat);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
 	public List<ConcertSeatResponse> getSeatsByConcert(Long concertId) {
 
 		concertSeatDomainService.validateExistence(concertId);
@@ -55,4 +56,15 @@ public class ConcertSeatService {
 			.map(ConcertSeatResponse::from)
 			.toList();
 	}
+
+	@Transactional
+	public void changeConcertSeat(Long userId, Long concertId, Long oldSeatId, Long newSeatId) {
+		ConcertSeat oldSeat = concertSeatRepository.findByConcertIdAndSeatId(concertId, oldSeatId)
+			.orElseThrow(() -> new ConcertSeatException(ConcertSeatExceptionCode.CONCERT_SEAT_NOT_FOUND));
+
+		concertSeatDomainService.cancel(oldSeat);
+
+		reserveConcertSeat(userId, concertId, newSeatId);
+	}
+
 }
