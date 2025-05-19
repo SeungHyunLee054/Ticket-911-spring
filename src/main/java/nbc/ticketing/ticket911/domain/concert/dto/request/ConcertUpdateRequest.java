@@ -7,25 +7,32 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record ConcertUpdateRequest(
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ConcertUpdateRequest {
+
 	@NotBlank(message = "제목을 입력해주세요")
 	@Size(min = 3, max = 20, message = "제목은 3글자 이상 20글자 이하입니다")
-	String title,
+	private String title;
 
 	@NotBlank(message = "내용을 입력해주세요")
-	String description,
+	private String description;
 
 	@NotNull(message = "시작 시간을 입력해주세요")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime startTime,
+	private LocalDateTime startTime;
 
 	@NotNull(message = "예매 시작 시간을 입력해주세요")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime ticketOpen,
+	private LocalDateTime ticketOpen;
 
 	@NotNull(message = "예매 마감 시간을 입력해주세요")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime ticketClose
-) {
+	private LocalDateTime ticketClose;
+
 }

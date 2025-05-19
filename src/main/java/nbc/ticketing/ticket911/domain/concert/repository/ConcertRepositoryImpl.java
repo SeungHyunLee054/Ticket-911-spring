@@ -41,10 +41,10 @@ public class ConcertRepositoryImpl implements ConcertQueryRepository {
 			.from(concert)
 			.join(concert.stage, stage)
 			.where(
-				titleContains(condition.title()),
-				startTimeGte(condition.startTimeFrom()),
-				startTimeLte(condition.startTimeTo()),
-				stageNameContains(condition.stageName())
+				titleContains(condition.getTitle()),
+				startTimeGte(condition.getStartTimeFrom()),
+				startTimeLte(condition.getStartTimeTo()),
+				stageNameContains(condition.getStageName())
 			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
@@ -56,10 +56,10 @@ public class ConcertRepositoryImpl implements ConcertQueryRepository {
 			.join(concert.stage, stage)
 			.where(
 				notDeleted(),
-				titleContains(condition.title()),
-				startTimeGte(condition.startTimeFrom()),
-				startTimeLte(condition.startTimeTo()),
-				stageNameContains(condition.stageName())
+				titleContains(condition.getTitle()),
+				startTimeGte(condition.getStartTimeFrom()),
+				startTimeLte(condition.getStartTimeTo()),
+				stageNameContains(condition.getStageName())
 			)
 			.fetchOne();
 

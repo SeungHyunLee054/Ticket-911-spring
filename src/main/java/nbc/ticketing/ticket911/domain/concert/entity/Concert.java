@@ -62,11 +62,11 @@ public class Concert extends BaseEntity {
 	private LocalDateTime deletedAt;
 
 	public void update(ConcertUpdateRequest dto) {
-		this.title = dto.title();
-		this.description = dto.description();
-		this.startTime = dto.startTime();
-		this.ticketOpen = dto.ticketOpen();
-		this.ticketClose = dto.ticketClose();
+		this.title = dto.getTitle();
+		this.description = dto.getDescription();
+		this.startTime = dto.getStartTime();
+		this.ticketOpen = dto.getTicketOpen();
+		this.ticketClose = dto.getTicketClose();
 	}
 
 	public void delete() {

@@ -40,16 +40,16 @@ public class ConcertService {
 		Stage stage = stageRepository.findById(stageId)
 			.orElseThrow(() -> new IllegalArgumentException("공연장이 존재하지 않습니다."));
 
-		concertDomainService.validateCreatable(request.startTime(), request.ticketOpen(), request.ticketClose());
+		concertDomainService.validateCreatable(request.getStartTime(), request.getTicketOpen(), request.getTicketClose());
 
 		Concert concert = Concert.builder()
 			.user(user)
 			.stage(stage)
-			.title(request.title())
-			.description(request.description())
-			.startTime(request.startTime())
-			.ticketOpen(request.ticketOpen())
-			.ticketClose(request.ticketClose())
+			.title(request.getTitle())
+			.description(request.getDescription())
+			.startTime(request.getStartTime())
+			.ticketOpen(request.getTicketOpen())
+			.ticketClose(request.getTicketClose())
 			.isSoldOut(false)
 			.build();
 
@@ -79,7 +79,7 @@ public class ConcertService {
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 
 		concertDomainService.validateUpdatable(concert, userId);
-		concertDomainService.validateCreatable(request.startTime(), request.ticketOpen(), request.ticketClose());
+		concertDomainService.validateCreatable(request.getStartTime(), request.getTicketOpen(), request.getTicketClose());
 
 		concert.update(request);
 

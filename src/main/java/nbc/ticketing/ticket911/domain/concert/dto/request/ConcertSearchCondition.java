@@ -4,17 +4,22 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record ConcertSearchCondition(
-	String title,
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ConcertSearchCondition {
+
+	private String title;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime startTimeFrom,
+	private LocalDateTime startTimeFrom;
 
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	LocalDateTime startTimeTo,
+	private LocalDateTime startTimeTo;
 
-	String stageName
-) {
+	private String stageName;
 }
