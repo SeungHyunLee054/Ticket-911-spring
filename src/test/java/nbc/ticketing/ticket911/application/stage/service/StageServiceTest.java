@@ -57,12 +57,6 @@ class StageServiceTest {
 			// Given
 			CreateStageRequestDto createStageRequestDto = new CreateStageRequestDto("test");
 
-			Stage stage = Stage.builder()
-				.stageName("test")
-				.totalSeat(0L)
-				.stageStatus(StageStatus.AVAILABLE)
-				.build();
-
 			Stage savedStage = Stage.builder()
 				.id(1L)
 				.stageName("test")
