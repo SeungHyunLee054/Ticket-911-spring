@@ -25,14 +25,26 @@ public class ConcertDomainService {
 		}
 	}
 
-	public void validateUpdatable(Concert concert, Long currentUserId) {
-		if (!concert.getUser().getId().equals(currentUserId)) {
+	public void validateUpdatable(Concert concert, Long userId) {
+		validateAuthor(concert, userId);
+		validateNotStarted(concert);
+	}
+
+	public void validateDeletable(Concert concert, Long userId) {
+		validateAuthor(concert, userId);
+	}
+
+	private void validateAuthor(Concert concert, Long userId) {
+		if (!concert.getUser().getId().equals(userId)) {
 			throw new ConcertException(ConcertExceptionCode.NOT_ENOUGH_ROLE);
 		}
+	}
 
+	private void validateNotStarted(Concert concert) {
 		if (concert.getStartTime().isBefore(LocalDateTime.now())) {
 			throw new ConcertException(ConcertExceptionCode.CONCERT_ALREADY_STARTED);
 		}
 	}
+
 
 }

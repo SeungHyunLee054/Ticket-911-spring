@@ -84,4 +84,14 @@ public class ConcertService {
 
 		return ConcertDetailResponse.from(concert);
 	}
+
+	@Transactional
+	public void deleteConcert(Long concertId, Long userId) {
+		Concert concert = concertRepository.findById(concertId)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+
+		concertDomainService.validateDeletable(concert, userId);
+
+		concert.delete();
+	}
 }

@@ -58,12 +58,19 @@ public class Concert extends BaseEntity {
 	@Column(nullable = false)
 	private boolean isSoldOut;
 
+	@Column
+	private LocalDateTime deletedAt;
+
 	public void update(ConcertUpdateRequest dto) {
 		this.title = dto.title();
 		this.description = dto.description();
 		this.startTime = dto.startTime();
 		this.ticketOpen = dto.ticketOpen();
 		this.ticketClose = dto.ticketClose();
+	}
+
+	public void delete() {
+		this.deletedAt = LocalDateTime.now();
 	}
 
 }
