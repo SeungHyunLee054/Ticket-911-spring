@@ -1,5 +1,6 @@
 package nbc.ticketing.ticket911.application.auth.service;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +42,9 @@ public class AuthService {
 		return SignInResponseDto.builder()
 			.accessToken(token)
 			.build();
+	}
+
+	public void signOut() {
+		SecurityContextHolder.clearContext();
 	}
 }
