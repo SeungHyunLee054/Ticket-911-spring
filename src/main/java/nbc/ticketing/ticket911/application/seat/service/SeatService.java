@@ -46,4 +46,13 @@ public class SeatService {
 			.collect(Collectors.toList());
 
 	}
+
+	public List<SeatResponseDto> getSeats(Long stageId) {
+		Stage stage = stageService.verifyStage(stageId);
+		List<Seat> seats = stage.getSeats();
+
+		return seats.stream()
+			.map(SeatResponseDto::from)
+			.collect(Collectors.toList());
+	}
 }

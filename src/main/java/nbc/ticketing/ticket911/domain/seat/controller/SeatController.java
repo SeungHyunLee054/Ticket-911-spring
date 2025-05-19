@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,15 @@ public class SeatController {
 		List<SeatResponseDto> seatResponseDtos = seatService.createSeat(stageId, createSeatRequestDto);
 
 		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "좌석 생성 성공", seatResponseDtos));
+	}
+
+	@GetMapping
+	public ResponseEntity<CommonResponse<List<SeatResponseDto>>> getSeats(
+		@PathVariable Long stageId
+	) {
+		List<SeatResponseDto> seatResponseDtos = seatService.getSeats(stageId);
+
+		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "좌석 조회 성공", seatResponseDtos));
 	}
 
 }
