@@ -16,6 +16,7 @@ import nbc.ticketing.ticket911.domain.seat.entity.Seat;
 import nbc.ticketing.ticket911.domain.seat.exception.SeatException;
 import nbc.ticketing.ticket911.domain.seat.exception.code.SeatExceptionCode;
 import nbc.ticketing.ticket911.domain.seat.repository.SeatRepository;
+import nbc.ticketing.ticket911.domain.seat.service.SeatDomainService;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 
 @Service
@@ -25,6 +26,7 @@ public class SeatService {
 
 	private final SeatRepository seatRepository;
 	private final StageService stageService;
+	private final SeatDomainService seatDomainService;
 
 	@Transactional
 	public List<SeatResponseDto> createSeat(Long stageId, CreateSeatRequestDto createSeatRequestDto) {
@@ -59,7 +61,6 @@ public class SeatService {
 			.collect(Collectors.toList());
 	}
 
-	@SuppressWarnings("checkstyle:WhitespaceAround")
 	@Transactional
 	public SeatResponseDto updateSeat(Long stageId, Long seatId, UpdateSeatRequestDto updateSeatRequestDto) {
 		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
@@ -69,18 +70,13 @@ public class SeatService {
 			throw new SeatException(SeatExceptionCode.SEAT_NOT_BELONG_TO_STAGE);
 		}
 
-		if (updateSeatRequestDto.getSeatName() != null) {
-			seat.updateSeatName(updateSeatRequestDto.getSeatName());
-		}
-
-		if (updateSeatRequestDto.getSeatPrice() != null) {
-			seat.updateSeatPrice(updateSeatRequestDto.getSeatPrice());
-		}
+		seat = seatDomainService.updateSeat(seat, updateSeatRequestDto);
 
 		return SeatResponseDto.from(seat);
 
 	}
 
+	@Transactional
 	public void deleteSeat(Long stageId, Long seatId) {
 		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
 		Seat seat = getSeatBySeatIdOrElseThrow(seatId);
