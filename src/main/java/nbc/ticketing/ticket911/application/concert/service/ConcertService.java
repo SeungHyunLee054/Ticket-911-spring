@@ -1,5 +1,7 @@
 package nbc.ticketing.ticket911.application.concert.service;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -9,8 +11,11 @@ import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertCreateResponse;
+import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertDetailResponse;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertPageResponse;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
+import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
+import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
 import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
 import nbc.ticketing.ticket911.domain.concert.service.ConcertDomainService;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
@@ -58,5 +63,13 @@ public class ConcertService {
 	@Transactional(readOnly = true)
 	public Page<ConcertPageResponse> searchConcerts(ConcertSearchCondition condition, Pageable pageable) {
 		return concertRepository.searchConcerts(condition, pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public ConcertDetailResponse getConcertDetail(Long concertId) {
+		Concert concert = concertRepository.findById(concertId)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+
+		return ConcertDetailResponse.from(concert);
 	}
 }
