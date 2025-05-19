@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbc.ticketing.ticket911.common.audit.BaseEntity;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertUpdateRequest;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 
@@ -56,5 +57,20 @@ public class Concert extends BaseEntity {
 
 	@Column(nullable = false)
 	private boolean isSoldOut;
+
+	@Column
+	private LocalDateTime deletedAt;
+
+	public void update(ConcertUpdateRequest dto) {
+		this.title = dto.getTitle();
+		this.description = dto.getDescription();
+		this.startTime = dto.getStartTime();
+		this.ticketOpen = dto.getTicketOpen();
+		this.ticketClose = dto.getTicketClose();
+	}
+
+	public void delete() {
+		this.deletedAt = LocalDateTime.now();
+	}
 
 }
