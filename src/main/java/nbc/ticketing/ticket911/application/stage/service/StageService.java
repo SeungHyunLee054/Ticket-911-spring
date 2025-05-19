@@ -59,7 +59,7 @@ public class StageService {
 		return StageResponseDto.from(stage);
 	}
 
-	private Stage getStageByStageIdOrElseThrow(Long stageId) {
+	public Stage getStageByStageIdOrElseThrow(Long stageId) {
 		return stageRepository.findById(stageId)
 			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
 	}

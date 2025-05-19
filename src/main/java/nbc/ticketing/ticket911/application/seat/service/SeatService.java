@@ -25,7 +25,7 @@ public class SeatService {
 
 	@Transactional
 	public List<SeatResponseDto> createSeat(Long stageId, CreateSeatRequestDto createSeatRequestDto) {
-		Stage stage = stageService.verifyStage(stageId);
+		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
 
 		List<Seat> seats = LongStream.range(0, createSeatRequestDto.getSeatCount())
 			.mapToObj(i -> {
@@ -48,7 +48,7 @@ public class SeatService {
 	}
 
 	public List<SeatResponseDto> getSeats(Long stageId) {
-		Stage stage = stageService.verifyStage(stageId);
+		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
 		List<Seat> seats = stage.getSeats();
 
 		return seats.stream()
