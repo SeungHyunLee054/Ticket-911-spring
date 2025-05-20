@@ -30,7 +30,7 @@ public class SeatService {
 
 	@Transactional
 	public List<SeatResponseDto> createSeat(Long stageId, CreateSeatRequestDto createSeatRequestDto) {
-		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageService.findStageByStageIdOrElseThrow(stageId);
 
 		List<Seat> seats = LongStream.range(0, createSeatRequestDto.getSeatCount())
 			.mapToObj(i -> {
@@ -53,7 +53,7 @@ public class SeatService {
 	}
 
 	public List<SeatResponseDto> getSeats(Long stageId) {
-		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageService.findStageByStageIdOrElseThrow(stageId);
 		List<Seat> seats = stage.getSeats();
 
 		return seats.stream()
@@ -63,7 +63,7 @@ public class SeatService {
 
 	@Transactional
 	public SeatResponseDto updateSeat(Long stageId, Long seatId, UpdateSeatRequestDto updateSeatRequestDto) {
-		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageService.findStageByStageIdOrElseThrow(stageId);
 		Seat seat = getSeatBySeatIdOrElseThrow(seatId);
 
 		if (seat.getStage() != stage) {
@@ -78,7 +78,7 @@ public class SeatService {
 
 	@Transactional
 	public void deleteSeat(Long stageId, Long seatId) {
-		Stage stage = stageService.getStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageService.findStageByStageIdOrElseThrow(stageId);
 		Seat seat = getSeatBySeatIdOrElseThrow(seatId);
 
 		if (seat.getStage() != stage) {

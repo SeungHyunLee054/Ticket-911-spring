@@ -63,7 +63,7 @@ public class StageController {
 		@PathVariable Long stageId,
 		@RequestBody @Valid UpdateStageRequestDto updateStageRequestDto
 	) {
-		StageResponseDto stageResponseDto = stageService.updateService(stageId, updateStageRequestDto);
+		StageResponseDto stageResponseDto = stageService.updateStage(stageId, updateStageRequestDto);
 
 		return ResponseEntity.ok(CommonResponse.of(true, HttpStatus.OK.value(), "공연장 수정 성공", stageResponseDto));
 	}
