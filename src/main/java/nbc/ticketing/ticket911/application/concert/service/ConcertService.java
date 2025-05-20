@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import nbc.ticketing.ticket911.application.concertseat.service.ConcertSeatService;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertUpdateRequest;
@@ -39,6 +40,7 @@ public class ConcertService {
 	private final StageRepository stageRepository;
 	private final ConcertDomainService concertDomainService;
 	private final ConcertSeatRepository concertSeatRepository;
+	private final ConcertSeatService concertSeatService;
 
 	@Transactional
 	public ConcertCreateResponse createConcert(Long userId, Long stageId, ConcertCreateRequest request) {
@@ -61,11 +63,7 @@ public class ConcertService {
 
 		concertRepository.save(concert);
 
-		List<ConcertSeat> concertSeats = stage.getSeats().stream()
-			.map(seat -> ConcertSeat.of(concert, seat))
-			.toList();
-
-		concertSeatRepository.saveAll(concertSeats);
+		concertSeatService.createConcertSeats(concert, stage.getSeats());
 
 		return ConcertCreateResponse.from(concert);
 

@@ -32,6 +32,15 @@ public class ConcertSeatService {
 	private final ConcertSeatRepository concertSeatRepository;
 
 	@Transactional
+	public void createConcertSeats(Concert concert, List<Seat> seats) {
+		List<ConcertSeat> concertSeats = seats.stream()
+			.map(seat -> ConcertSeat.of(concert, seat))
+			.toList();
+
+		concertSeatRepository.saveAll(concertSeats);
+	}
+
+	@Transactional
 	public void reserveConcertSeat(Long userId, Long concertId, Long seatId) {
 		Concert concert = concertRepository.findById(concertId)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
