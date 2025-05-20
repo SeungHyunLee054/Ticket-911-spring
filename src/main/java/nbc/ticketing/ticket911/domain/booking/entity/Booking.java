@@ -1,5 +1,6 @@
 package nbc.ticketing.ticket911.domain.booking.entity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import nbc.ticketing.ticket911.common.audit.BaseEntity;
+import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 
@@ -44,5 +46,53 @@ public class Booking extends BaseEntity {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "booking_id")
 	private List<ConcertSeat> concertSeats = new ArrayList<>();
+
+	public Concert getConcert() {
+		return this.concertSeats.get(0).getConcert();
+	}
+
+	public String getUserEmail() {
+		return this.user.getEmail();
+	}
+
+	public String getUserNickname() {
+		return this.user.getNickname();
+	}
+
+	public String getConcertTitle() {
+		return getConcert().getTitle();
+	}
+
+	public String getConcertStageName() {
+		return getConcert().getStageName();
+	}
+
+	public LocalDateTime getConcertStartTime() {
+		return getConcert().getStartTime();
+	}
+
+	public int getTotalPrice() {
+		return this.concertSeats.stream()
+			.mapToInt(ConcertSeat::getSeatPriceToInt)
+			.sum();
+	}
+
+	public List<String> getSeatNames() {
+		return this.concertSeats.stream()
+			.map(ConcertSeat::getSeatName)
+			.toList();
+	}
+
+	public void canceledBooking() {
+		this.isCanceled = true;
+	}
+
+	public boolean isOwnedBy(User user) {
+		return this.user.equals(user);
+	}
+
+	public boolean validateCancellable(LocalDateTime now) {
+		return getConcertStartTime().isAfter(now);
+	}
 
 }
