@@ -45,12 +45,16 @@ public class SecurityConfig {
 				.requestMatchers(
 					"/v3/api-docs/**",
 					"/swagger-ui/**",
-					"/swagger-ui.html"
+					"/swagger-ui.html",
+					"/favicon.ico"
 				).permitAll()
 				.requestMatchers(
 					"/auth/signin",
 					"/users/signup",
-					"/error"
+					"/error",
+					"/actuator/**",
+					"/metrics/**",
+					"/api/v1/**"
 				).permitAll()
 				.anyRequest().authenticated())
 			.exceptionHandling(exception ->

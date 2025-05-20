@@ -73,4 +73,7 @@ public class Concert extends BaseEntity {
 		this.deletedAt = LocalDateTime.now();
 	}
 
+	public String getStageName() {
+		return this.stage.getStageName();
+	}
 }
