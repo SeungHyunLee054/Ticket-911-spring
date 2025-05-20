@@ -26,8 +26,8 @@ public class WithCustomMockUserSecurityContextFactory implements WithSecurityCon
 			.build();
 
 		UsernamePasswordAuthenticationToken token =
-			new UsernamePasswordAuthenticationToken(user, null
-				, List.of(new SimpleGrantedAuthority(annotation.role().name())));
+			new UsernamePasswordAuthenticationToken(user, null,
+				List.of(new SimpleGrantedAuthority(annotation.role().name())));
 		SecurityContext context = SecurityContextHolder.getContext();
 		context.setAuthentication(token);
 		return context;

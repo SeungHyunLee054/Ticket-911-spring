@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum UserExceptionCode {
-	WRONG_ROLES(false,HttpStatus.BAD_REQUEST,"유저 권한을 잘못 입력하였습니다."),
+	WRONG_ROLES(false, HttpStatus.BAD_REQUEST, "유저 권한을 잘못 입력하였습니다."),
 	WRONG_PASSWORD(false, HttpStatus.UNAUTHORIZED, "비밀번호가 틀렸습니다."),
 	SAME_PASSWORD(false, HttpStatus.CONFLICT, "기존과 동일한 비밀번호로 수정할 수 없습니다."),
 	NOT_CHANGED(false, HttpStatus.BAD_REQUEST, "수정 사항이 존재하지 않습니다."),
