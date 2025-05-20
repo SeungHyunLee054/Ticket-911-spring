@@ -9,8 +9,6 @@ import nbc.ticketing.ticket911.domain.auth.dto.request.SignInRequestDto;
 import nbc.ticketing.ticket911.domain.auth.dto.response.SignInResponseDto;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.user.entity.User;
-import nbc.ticketing.ticket911.domain.user.exception.UserException;
-import nbc.ticketing.ticket911.domain.user.exception.code.UserExceptionCode;
 import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 import nbc.ticketing.ticket911.infrastructure.security.jwt.JwtUtil;
 
@@ -24,9 +22,7 @@ public class AuthService {
 	public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
 		User user = userDomainService.findUserByEmailOrElseThrow(signInRequestDto.getEmail());
 
-		if (userDomainService.isPasswordMismatch(signInRequestDto.getPassword(), user.getPassword())) {
-			throw new UserException(UserExceptionCode.WRONG_PASSWORD);
-		}
+		userDomainService.validatePassword(signInRequestDto.getPassword(), user.getPassword());
 
 		AuthUser authUser = AuthUser.builder()
 			.id(user.getId())

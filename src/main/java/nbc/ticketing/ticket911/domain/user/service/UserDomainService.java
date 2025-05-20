@@ -28,13 +28,9 @@ public class UserDomainService {
 	 * @author 이승현
 	 */
 	public User createUser(SignupRequestDto signupRequestDto) {
-		if (checkEmailExists(signupRequestDto.getEmail())) {
-			throw new UserException(UserExceptionCode.ALREADY_EXISTS_EMAIL);
-		}
+		validateEmailExists(signupRequestDto.getEmail());
 
-		if (checkNicknameExists(signupRequestDto.getNickname())) {
-			throw new UserException(UserExceptionCode.ALREADY_EXISTS_NICKNAME);
-		}
+		validateNicknameExists(signupRequestDto.getNickname());
 
 		User user = User.builder()
 			.email(signupRequestDto.getEmail())
@@ -62,23 +58,25 @@ public class UserDomainService {
 	}
 
 	/**
-	 * 이메일 중복 체크
+	 * 이메일 중복 검증
 	 * @param email 이메일
-	 * @return boolean
 	 * @author 이승현
 	 */
-	public boolean checkEmailExists(String email) {
-		return userRepository.existsByEmail(email);
+	public void validateEmailExists(String email) {
+		if (userRepository.existsByEmail(email)) {
+			throw new UserException(UserExceptionCode.ALREADY_EXISTS_EMAIL);
+		}
 	}
 
 	/**
-	 * 닉네임 중복 체크
+	 * 닉네임 중복 검증
 	 * @param nickname 닉네임
-	 * @return boolean
 	 * @author 이승현
 	 */
-	public boolean checkNicknameExists(String nickname) {
-		return userRepository.existsByNickname(nickname);
+	public void validateNicknameExists(String nickname) {
+		if (userRepository.existsByNickname(nickname)) {
+			throw new UserException(UserExceptionCode.ALREADY_EXISTS_NICKNAME);
+		}
 	}
 
 	/**
@@ -114,9 +112,7 @@ public class UserDomainService {
 			return;
 		}
 
-		if (checkNicknameExists(newNickname)) {
-			throw new UserException(UserExceptionCode.ALREADY_EXISTS_NICKNAME);
-		}
+		validateNicknameExists(newNickname);
 
 		user.changeNickname(newNickname);
 	}
@@ -132,21 +128,21 @@ public class UserDomainService {
 			return;
 		}
 
-		if (isPasswordMismatch(passwordUpdateForm.getOldPassword(), user.getPassword())) {
-			throw new UserException(UserExceptionCode.WRONG_PASSWORD);
-		}
+		validatePassword(passwordUpdateForm.getOldPassword(), user.getPassword());
 
 		user.changePassword(passwordEncoder.encode(passwordUpdateForm.getNewPassword()));
 	}
 
 	/**
-	 * 비밀번호 체크
-	 * @param rawPassword 암호화되지 않은 비밀번호
+	 * 비밀번호 검증
+	 * @param rawPassword     암호화되지 않은 비밀번호
 	 * @param encodedPassword 암호화된 비밀번호
 	 * @author 이승현
 	 */
-	public boolean isPasswordMismatch(String rawPassword, String encodedPassword) {
-		return !passwordEncoder.matches(rawPassword, encodedPassword);
+	public void validatePassword(String rawPassword, String encodedPassword) {
+		if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+			throw new UserException(UserExceptionCode.WRONG_PASSWORD);
+		}
 	}
 
 	/**

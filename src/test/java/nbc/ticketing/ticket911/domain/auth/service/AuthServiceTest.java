@@ -78,7 +78,7 @@ class AuthServiceTest {
 
 			// Then
 			verify(userDomainService, times(1)).findUserByEmailOrElseThrow(anyString());
-			verify(userDomainService, times(1)).isPasswordMismatch(anyString(), anyString());
+			verify(userDomainService, times(1)).validatePassword(anyString(), anyString());
 			verify(jwtUtil, times(1)).generateAccessToken(any());
 
 			assertThat(responseDto)
@@ -89,18 +89,48 @@ class AuthServiceTest {
 		}
 
 		@Test
-		@DisplayName("로그인 실패 - 비밀번호 불일치")
-		void fail_signin_wrongPassword() {
+		@DisplayName("로그인 실패 - 이메일로 유저를 찾을 수 없음")
+		void fail_signin_userNotFound() {
 			// Given
-			given(userDomainService.findUserByEmailOrElseThrow(anyString()))
-				.willReturn(user);
-			given(userDomainService.isPasswordMismatch(anyString(), anyString()))
-				.willReturn(true);
+			doThrow(new UserException(UserExceptionCode.USER_NOT_FOUND))
+				.when(userDomainService)
+				.findUserByEmailOrElseThrow(anyString());
 
 			// When
 			UserException exception = assertThrows(UserException.class, () -> authService.signIn(signInRequestDto));
 
 			// Then
+			verify(userDomainService, times(1)).findUserByEmailOrElseThrow(anyString());
+			verify(userDomainService, never()).validatePassword(anyString(), anyString());
+			verify(jwtUtil, never()).generateAccessToken(any());
+
+			assertThat(exception.getErrorCode())
+				.isEqualTo(UserExceptionCode.USER_NOT_FOUND);
+			assertThat(exception.getMessage())
+				.isEqualTo(UserExceptionCode.USER_NOT_FOUND.getMessage());
+			assertThat(exception.getHttpStatus())
+				.isEqualTo(UserExceptionCode.USER_NOT_FOUND.getStatus());
+
+		}
+
+		@Test
+		@DisplayName("로그인 실패 - 비밀번호 불일치")
+		void fail_signin_wrongPassword() {
+			// Given
+			given(userDomainService.findUserByEmailOrElseThrow(anyString()))
+				.willReturn(user);
+			doThrow(new UserException(UserExceptionCode.WRONG_PASSWORD))
+				.when(userDomainService)
+				.validatePassword(anyString(), anyString());
+
+			// When
+			UserException exception = assertThrows(UserException.class, () -> authService.signIn(signInRequestDto));
+
+			// Then
+			verify(userDomainService, times(1)).findUserByEmailOrElseThrow(anyString());
+			verify(userDomainService, times(1)).validatePassword(anyString(), anyString());
+			verify(jwtUtil, never()).generateAccessToken(any());
+
 			assertThat(exception.getErrorCode())
 				.isEqualTo(UserExceptionCode.WRONG_PASSWORD);
 			assertThat(exception.getMessage())
