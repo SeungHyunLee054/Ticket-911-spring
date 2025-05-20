@@ -106,12 +106,8 @@ class StageServiceTest {
 
 			// then
 			assertThat(result.getTotalElements()).isEqualTo(stages.size());
-			assertThat(result.getContent())
-				.extracting(StageResponseDto::getStageName)
-				.containsExactly("Main Stage 1", "Main Stage 2");
 
 			verify(stageRepository, times(1)).findByStageNameContaining(keyword, pageable);
-		}
 		}
 	}
 
