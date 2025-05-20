@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nbc.ticketing.ticket911.application.user.service.UserService;
+import nbc.ticketing.ticket911.domain.user.application.UserService;
 import nbc.ticketing.ticket911.domain.user.dto.request.SignupRequestDto;
 import nbc.ticketing.ticket911.domain.user.dto.request.UpdateUserRequestDto;
 import nbc.ticketing.ticket911.domain.user.dto.response.UserResponseDto;

@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import nbc.ticketing.ticket911.application.auth.service.AuthService;
+import nbc.ticketing.ticket911.domain.auth.application.AuthService;
 import nbc.ticketing.ticket911.domain.auth.dto.request.SignInRequestDto;
 import nbc.ticketing.ticket911.domain.auth.dto.response.SignInResponseDto;
 import nbc.ticketing.ticket911.support.security.TestSecurityConfig;

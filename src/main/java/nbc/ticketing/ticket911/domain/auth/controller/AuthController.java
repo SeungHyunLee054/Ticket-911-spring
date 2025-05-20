@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.application.auth.service.AuthService;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
+import nbc.ticketing.ticket911.domain.auth.application.AuthService;
 import nbc.ticketing.ticket911.domain.auth.dto.request.SignInRequestDto;
 import nbc.ticketing.ticket911.domain.auth.dto.response.SignInResponseDto;
 
