@@ -52,12 +52,19 @@ public class User extends BaseEntity {
 		this.password = password;
 	}
 
-	public void withdraw(){
+	public void withdraw() {
 		this.isDeleted = true;
 	}
 
-	public void addPoint(int point){
+	public void addPoint(int point) {
 		this.point += point;
 	}
 
+	public void usePoint(int totalPrice) {
+		this.point -= totalPrice;
+	}
+
+	public void refundPoint(int refundPoint) {
+		this.point += refundPoint;
+	}
 }

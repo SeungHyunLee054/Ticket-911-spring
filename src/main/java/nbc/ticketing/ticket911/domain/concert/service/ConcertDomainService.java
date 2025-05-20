@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Component;
 
+import nbc.ticketing.ticket911.domain.booking.constant.BookableStatus;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
@@ -49,6 +50,16 @@ public class ConcertDomainService {
 	 */
 	public void validateDeletable(Concert concert, Long userId) {
 		validateAuthor(concert, userId);
+	}
+
+	public BookableStatus getBookableStatus(Concert concert, LocalDateTime now) {
+		if (concert.getTicketOpen().isAfter(now)) {
+			return BookableStatus.BEFORE_OPEN;
+		}
+		if (concert.getTicketClose().isBefore(now)) {
+			return BookableStatus.AFTER_CLOSE;
+		}
+		return BookableStatus.BOOKABLE;
 	}
 
 	/**
