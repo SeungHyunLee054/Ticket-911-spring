@@ -32,7 +32,7 @@ public class ConcertDomainService {
 	 * @return 생성된 Concert 객체
 	 */
 	public Concert createConcert(User user, Stage stage, ConcertCreateRequest request) {
-		return Concert.builder()
+		Concert concert = Concert.builder()
 			.user(user)
 			.stage(stage)
 			.title(request.getTitle())
@@ -42,6 +42,7 @@ public class ConcertDomainService {
 			.ticketClose(request.getTicketClose())
 			.isSoldOut(false)
 			.build();
+		return concertRepository.save(concert);
 	}
 
 	/**

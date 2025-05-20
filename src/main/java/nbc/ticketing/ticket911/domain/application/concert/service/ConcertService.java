@@ -41,7 +41,6 @@ public class ConcertService {
 
 		Concert concert = concertDomainService.createConcert(user, stage, request);
 
-		concertRepository.save(concert);
 		concertSeatService.createConcertSeats(concert, stage.getSeats());
 
 		return ConcertCreateResponse.from(concert);
