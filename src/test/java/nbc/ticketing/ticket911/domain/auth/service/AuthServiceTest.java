@@ -1,11 +1,10 @@
-package nbc.ticketing.ticket911.application.auth.service;
+package nbc.ticketing.ticket911.domain.auth.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,27 +20,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
+import nbc.ticketing.ticket911.domain.auth.application.AuthService;
 import nbc.ticketing.ticket911.domain.auth.dto.request.SignInRequestDto;
 import nbc.ticketing.ticket911.domain.auth.dto.response.SignInResponseDto;
 import nbc.ticketing.ticket911.domain.user.constant.UserRole;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 import nbc.ticketing.ticket911.domain.user.exception.UserException;
 import nbc.ticketing.ticket911.domain.user.exception.code.UserExceptionCode;
-import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
+import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 import nbc.ticketing.ticket911.infrastructure.security.jwt.JwtUtil;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 	@Mock
-	private UserRepository userRepository;
-
-	@Mock
 	private JwtUtil jwtUtil;
 
 	@Mock
-	private PasswordEncoder passwordEncoder;
+	private UserDomainService userDomainService;
 
 	@InjectMocks
 	private AuthService authService;
@@ -72,10 +68,8 @@ class AuthServiceTest {
 		@DisplayName("로그인 성공")
 		void success_signin() {
 			// Given
-			given(userRepository.findByEmail(anyString()))
-				.willReturn(Optional.ofNullable(user));
-			given(passwordEncoder.matches(anyString(), anyString()))
-				.willReturn(true);
+			given(userDomainService.findUserByEmailOrElseThrow(anyString()))
+				.willReturn(user);
 			given(jwtUtil.generateAccessToken(any()))
 				.willReturn(TOKEN);
 
@@ -83,6 +77,10 @@ class AuthServiceTest {
 			SignInResponseDto responseDto = authService.signIn(signInRequestDto);
 
 			// Then
+			verify(userDomainService, times(1)).findUserByEmailOrElseThrow(anyString());
+			verify(userDomainService, times(1)).isPasswordMismatch(anyString(), anyString());
+			verify(jwtUtil, times(1)).generateAccessToken(any());
+
 			assertThat(responseDto)
 				.isNotNull();
 			assertThat(responseDto.getAccessToken())
@@ -91,33 +89,13 @@ class AuthServiceTest {
 		}
 
 		@Test
-		@DisplayName("로그인 실패 - 유저를 찾을 수 없음")
-		void fail_signin_userNotFound() {
-			// Given
-			given(userRepository.findByEmail(anyString()))
-				.willReturn(Optional.empty());
-
-			// When
-			UserException exception = assertThrows(UserException.class, () -> authService.signIn(signInRequestDto));
-
-			// Then
-			assertThat(exception.getErrorCode())
-				.isEqualTo(UserExceptionCode.USER_NOT_FOUND);
-			assertThat(exception.getMessage())
-				.isEqualTo(UserExceptionCode.USER_NOT_FOUND.getMessage());
-			assertThat(exception.getHttpStatus())
-				.isEqualTo(UserExceptionCode.USER_NOT_FOUND.getStatus());
-
-		}
-
-		@Test
 		@DisplayName("로그인 실패 - 비밀번호 불일치")
 		void fail_signin_wrongPassword() {
 			// Given
-			given(userRepository.findByEmail(anyString()))
-				.willReturn(Optional.ofNullable(user));
-			given(passwordEncoder.matches(anyString(), anyString()))
-				.willReturn(false);
+			given(userDomainService.findUserByEmailOrElseThrow(anyString()))
+				.willReturn(user);
+			given(userDomainService.isPasswordMismatch(anyString(), anyString()))
+				.willReturn(true);
 
 			// When
 			UserException exception = assertThrows(UserException.class, () -> authService.signIn(signInRequestDto));

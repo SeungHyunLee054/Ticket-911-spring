@@ -3,6 +3,8 @@ package nbc.ticketing.ticket911.domain.user.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.SQLRestriction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -23,6 +25,7 @@ import nbc.ticketing.ticket911.domain.user.constant.UserRole;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("is_deleted = false ")
 public class User extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,11 +63,7 @@ public class User extends BaseEntity {
 		this.point += point;
 	}
 
-	public void usePoint(int totalPrice) {
-		this.point -= totalPrice;
-	}
-
-	public void refundPoint(int refundPoint) {
-		this.point += refundPoint;
+	public void minusPoint(int point) {
+		this.point -= point;
 	}
 }
