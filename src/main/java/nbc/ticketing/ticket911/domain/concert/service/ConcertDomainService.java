@@ -105,7 +105,7 @@ public class ConcertDomainService {
 	 * @param concertId 공연 ID
 	 * @return Concert 엔티티
 	 */
-	public Concert getconcertById(Long concertId) {
+	public Concert getConcertById(Long concertId) {
 		return concertRepository.findById(concertId)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 	}

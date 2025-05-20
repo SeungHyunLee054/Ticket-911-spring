@@ -61,7 +61,7 @@ public class ConcertService {
 
 	@Transactional
 	public ConcertDetailResponse updateConcert(Long concertId, Long userId, ConcertUpdateRequest request) {
-		Concert concert = concertDomainService.getconcertById(concertId);
+		Concert concert = concertDomainService.getConcertById(concertId);
 
 		concertDomainService.validateUpdatable(concert, userId);
 		concertDomainService.validateCreatable(request.getStartTime(), request.getTicketOpen(),
@@ -74,7 +74,7 @@ public class ConcertService {
 
 	@Transactional
 	public void deleteConcert(Long concertId, Long userId) {
-		Concert concert = concertDomainService.getconcertById(concertId);
+		Concert concert = concertDomainService.getConcertById(concertId);
 
 		concertDomainService.validateDeletable(concert, userId);
 
