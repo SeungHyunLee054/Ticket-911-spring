@@ -23,6 +23,14 @@ public class ConcertDomainService {
 
 	private final ConcertRepository concertRepository;
 
+	/**
+	 * 공연 생성
+	 *
+	 * @param user 공연 등록자
+	 * @param stage 공연장 정보
+	 * @param request 새성 요청 DTO
+	 * @return 생성된 Concert 객체
+	 */
 	public Concert createConcert(User user, Stage stage, ConcertCreateRequest request) {
 		return Concert.builder()
 			.user(user)
@@ -73,6 +81,13 @@ public class ConcertDomainService {
 		validateAuthor(concert, userId);
 	}
 
+	/**
+	 * 현재 시간 기준으로 공연 예매 가능 상태를 반환
+	 *
+	 * @param concert 공연 엔티티
+	 * @param now     현재 시간
+	 * @return BookableStatus (예매 전/중/종료)
+	 */
 	public BookableStatus getBookableStatus(Concert concert, LocalDateTime now) {
 		if (concert.getTicketOpen().isAfter(now)) {
 			return BookableStatus.BEFORE_OPEN;
@@ -83,11 +98,23 @@ public class ConcertDomainService {
 		return BookableStatus.BOOKABLE;
 	}
 
+	/**
+	 * 공연 ID로 공연을 조회
+	 *
+	 * @param concertId 공연 ID
+	 * @return Concert 엔티티
+	 */
 	public Concert getconcertById(Long concertId) {
 		return concertRepository.findById(concertId)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 	}
 
+	/**
+	 * 공연 ID로 삭제되지 않은 공연을 조회
+	 *
+	 * @param concertId 공연 ID
+	 * @return Concert 엔티티
+	 */
 	public Concert getActiveConcertById(Long concertId) {
 		return concertRepository.findById(concertId)
 			.filter(c -> c.getDeletedAt() == null)
