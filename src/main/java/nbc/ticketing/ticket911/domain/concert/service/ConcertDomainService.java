@@ -2,18 +2,39 @@ package nbc.ticketing.ticket911.domain.concert.service;
 
 import java.time.LocalDateTime;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.booking.constant.BookableStatus;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
+import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
+import nbc.ticketing.ticket911.domain.stage.entity.Stage;
+import nbc.ticketing.ticket911.domain.user.entity.User;
 
 /**
  * 공연(Concert) 도메인 관련 비즈니스 검증을 담당하는 서비스
  */
-@Component
+@Service
+@RequiredArgsConstructor
 public class ConcertDomainService {
+
+	private final ConcertRepository concertRepository;
+
+	public Concert createConcert(User user, Stage stage, ConcertCreateRequest request) {
+		return Concert.builder()
+			.user(user)
+			.stage(stage)
+			.title(request.getTitle())
+			.description(request.getDescription())
+			.startTime(request.getStartTime())
+			.ticketOpen(request.getTicketOpen())
+			.ticketClose(request.getTicketClose())
+			.isSoldOut(false)
+			.build();
+	}
 
 	/**
 	 * 공연 생성 시의 시간 조건들을 통합 검증
@@ -60,6 +81,17 @@ public class ConcertDomainService {
 			return BookableStatus.AFTER_CLOSE;
 		}
 		return BookableStatus.BOOKABLE;
+	}
+
+	public Concert getconcertById(Long concertId) {
+		return concertRepository.findById(concertId)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+	}
+
+	public Concert getActiveConcertById(Long concertId) {
+		return concertRepository.findById(concertId)
+			.filter(c -> c.getDeletedAt() == null)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 	}
 
 	/**
