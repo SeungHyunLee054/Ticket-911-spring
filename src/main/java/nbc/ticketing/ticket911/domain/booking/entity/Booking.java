@@ -42,7 +42,7 @@ public class Booking extends BaseEntity {
 
 	@Builder.Default
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "booking_id", nullable = false)
+	@JoinColumn(name = "booking_id")
 	private List<ConcertSeat> concertSeats = new ArrayList<>();
 
 }
