@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import nbc.ticketing.ticket911.domain.booking.entity.Booking;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.seat.entity.Seat;
 
@@ -42,19 +43,31 @@ public class ConcertSeat {
 	@JoinColumn(name = "seat_id", nullable = false)
 	private Seat seat;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "booking_id")
+	private Booking booking;
+
 	@Column(nullable = false)
 	private boolean isReserved;
 
-	public static ConcertSeat of(Concert concert, Seat seat) {
-		return new ConcertSeat(null, concert, seat, false);
-	}
-
-	public void markReserved() {
+	public void reserve() {
 		this.isReserved = true;
 	}
 
-	public void markUnreserved() {
+	public void cancelReservation() {
+		this.booking = null;
 		this.isReserved = false;
 	}
 
+	public String getSeatName() {
+		return this.seat.getSeatName();
+	}
+
+	public Long getConcertId() {
+		return this.concert.getId();
+	}
+
+	public int getSeatPriceToInt() {
+		return this.seat.getSeatPrice().intValue();
+	}
 }
