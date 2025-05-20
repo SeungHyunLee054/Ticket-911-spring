@@ -50,7 +50,7 @@ public class UserDomainService {
 	}
 
 	/**
-	 * 유저 id로 유저 조회, 존재 하지 않을 경우 exception throw
+	 * 유저 id로 유저 조회(삭제되었을 경우 조회되지 않음), 존재 하지 않을 경우 exception throw
 	 * @param userId 유저 id
 	 * @return id로 조회된 유저
 	 * @throws UserException 유저가 존재하지 않음
