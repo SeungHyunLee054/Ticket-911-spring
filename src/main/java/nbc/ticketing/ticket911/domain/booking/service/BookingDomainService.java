@@ -1,5 +1,6 @@
 package nbc.ticketing.ticket911.domain.booking.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import nbc.ticketing.ticket911.domain.booking.entity.Booking;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
 import nbc.ticketing.ticket911.domain.booking.repository.BookingRepository;
+import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 
@@ -70,5 +72,25 @@ public class BookingDomainService {
 	 */
 	public void cancelBooking(Booking booking) {
 		booking.canceledBooking();
+	}
+
+	/**
+	 * 주어진 좌석의 공연이 현재 시각 기준으로 예매 가능한 상태인지 검증합니다.
+	 * <p>
+	 * - 공연의 티켓 오픈 시간이 아직 되지 않았다면 {@code BOOKING_NOT_OPEN} 예외가 발생합니다.<br>
+	 * - 공연의 티켓 마감 시간이 지났다면 {@code BOOKING_CLOSED} 예외가 발생합니다.
+	 *
+	 * @param concertSeats 예매 대상 좌석 리스트 (최소 하나 이상의 좌석이 포함되어 있어야 하며, 같은 공연이어야 합니다)
+	 * @param now 현재 시각 (예매 요청 시각)
+	 * @throws BookingException 예매 오픈 전이거나 예매 마감 후인 경우 발생
+	 */
+	public void validateBookable(List<ConcertSeat> concertSeats, LocalDateTime now) {
+		Concert concert = concertSeats.get(0).getConcert();
+		if (concert.getTicketOpen().isAfter(now)) {
+			throw new BookingException(BookingExceptionCode.BOOKING_NOT_OPEN);
+		}
+		if (concert.getTicketClose().isBefore(now)) {
+			throw new BookingException(BookingExceptionCode.BOOKING_CLOSED);
+		}
 	}
 }

@@ -98,34 +98,6 @@ public class ConcertDomainService {
 	}
 
 	/**
-	 * 현재 시간 기준으로 공연 예매 가능 상태를 반환
-	 *
-	 * @param concert 공연 엔티티
-	 * @param now     현재 시간
-	 * @return BookableStatus (예매 전/중/종료)
-	 */
-	public BookableStatus getBookableStatus(Concert concert, LocalDateTime now) {
-		if (concert.getTicketOpen().isAfter(now)) {
-			return BookableStatus.BEFORE_OPEN;
-		}
-		if (concert.getTicketClose().isBefore(now)) {
-			return BookableStatus.AFTER_CLOSE;
-		}
-		return BookableStatus.BOOKABLE;
-	}
-
-	public void validateBookable(List<ConcertSeat> concertSeats, LocalDateTime now) {
-		Concert concert = concertSeats.get(0).getConcert();
-		if (concert.getTicketOpen().isAfter(now)) {
-			throw new BookingException(BookingExceptionCode.BOOKING_NOT_OPEN);
-		}
-		if (concert.getTicketClose().isBefore(now)) {
-			throw new BookingException(BookingExceptionCode.BOOKING_CLOSED);
-		}
-	}
-
-
-	/**
 	 * 공연 ID로 공연을 조회
 	 *
 	 * @param concertId 공연 ID

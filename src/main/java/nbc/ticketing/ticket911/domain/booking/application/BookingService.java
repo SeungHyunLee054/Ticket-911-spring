@@ -36,7 +36,7 @@ public class BookingService {
 
 		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(bookingRequestDto.getSeatIds());
 
-		concertDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
 		concertSeatDomainService.validateAllSameConcert(concertSeats);
 		concertSeatDomainService.validateNotReserved(concertSeats);
 
