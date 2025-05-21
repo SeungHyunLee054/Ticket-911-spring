@@ -33,7 +33,7 @@ public class ConcertService {
 
 	@Transactional
 	public ConcertCreateResponse createConcert(Long userId, Long stageId, ConcertCreateRequest request) {
-		User user = userDomainService.getUserById(userId);
+		User user = userDomainService.findActiveUserById(userId);
 		Stage stage = stageDomainService.getStageWithSeatsById(stageId);
 
 		concertDomainService.validateCreatable(request.getStartTime(), request.getTicketOpen(),
