@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ticketing911-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+
+  prometheus:
+    image: prom/prometheus
+    container_name: ticket-prometheus
+    ports:
+      - "9090:9090"
+    restart: always
+
+  grafana:
+    image: grafana/grafana
+    container_name: ticket-grafana
+    ports:
+      - "3000:3000"
