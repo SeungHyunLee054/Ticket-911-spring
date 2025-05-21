@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.domain.concertseat.application.service;
+package nbc.ticketing.ticket911.domain.concertseat.application;
 
 import java.util.List;
 

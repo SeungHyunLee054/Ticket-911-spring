@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import nbc.ticketing.ticket911.domain.stage.application.StageService;
 import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
