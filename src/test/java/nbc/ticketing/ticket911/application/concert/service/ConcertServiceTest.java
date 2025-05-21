@@ -16,7 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import nbc.ticketing.ticket911.domain.concert.application.service.ConcertService;
+import nbc.ticketing.ticket911.domain.concert.application.ConcertService;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertUpdateRequest;
