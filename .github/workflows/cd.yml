@@ -1,0 +1,79 @@
+name: CD - Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: |
+          echo "SPRING_DATASOURCE_URL=${{ secrets.DB_URL }}" >> docker/.env
+          echo "SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USERNAME }}" >> docker/.env
+          echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" >> docker/.env
+          echo "SPRING_DATA_REDIS_HOST=${{ secrets.REDIS_HOST }}" >> docker/.env
+          echo "SPRING_DATA_REDIS_PORT=${{ secrets.REDIS_PORT }}" >> docker/.env
+          echo "SPRING_JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> docker/.env
+          chmod 600 docker/.env
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          port: '22'
+          source: "./docker"
+          target: "~/app"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            # System update and required packages installation
+            sudo apt-get update -y 
+            sudo apt-get install -y \
+            openjdk-17-jdk \
+            ca-certificates \
+            curl \
+            gnupg
+            
+            # Docker repository setup and installation
+            sudo install -m 0755 -d /etc/apt/keyrings
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            sudo chmod a+r /etc/apt/keyrings/docker.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+            
+            sudo apt-get update -y
+            sudo apt-get install -y \
+            docker-ce \
+            docker-ce-cli \
+            containerd.io \
+            docker-buildx-plugin \
+            docker-compose-plugin \
+            docker-compose
+            
+            # Add ubuntu user to docker group and reload group settings
+            sudo usermod -aG docker ubuntu
+            
+            # Kill existing Java Processes
+            pkill -f 'java -jar' || true
+            
+            # Deploy with Docker Compose
+            cd ~/app/docker || exit 1
+            docker compose down --remove-orphans || true
+            docker compose up --build -d
+            
+            echo "Waiting for containers to be up..."
+            sleep 10
+            docker compose ps
