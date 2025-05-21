@@ -10,8 +10,6 @@ import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.request.UpdateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
-import nbc.ticketing.ticket911.domain.stage.exception.StageException;
-import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
 import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
 import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
 
@@ -39,14 +37,14 @@ public class StageService {
 	}
 
 	public StageResponseDto getStage(Long stageId) {
-		Stage stage = findStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageDomainService.findStageByStageIdOrElseThrow(stageId);
 
 		return StageResponseDto.from(stage);
 	}
 
 	@Transactional
 	public StageResponseDto updateStage(Long stageId, UpdateStageRequestDto updateStageRequestDto) {
-		Stage stage = findStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageDomainService.findStageByStageIdOrElseThrow(stageId);
 
 		if (updateStageRequestDto.getStageName() != null) {
 			stage.updateStageName(updateStageRequestDto.getStageName());
@@ -58,8 +56,4 @@ public class StageService {
 		return StageResponseDto.from(stage);
 	}
 
-	public Stage findStageByStageIdOrElseThrow(Long stageId) {
-		return stageRepository.findById(stageId)
-			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
-	}
 }
