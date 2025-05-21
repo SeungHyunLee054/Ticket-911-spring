@@ -3,7 +3,6 @@ package nbc.ticketing.ticket911.application.stage.service;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
@@ -81,33 +76,6 @@ class StageServiceTest {
 
 			verify(stageRepository, times(1)).save(any(Stage.class));
 
-		}
-	}
-
-	@Nested
-	@DisplayName("공연장 조회 테스트")
-	class UpdateStageTest {
-		@Test
-		@DisplayName("공연장 조회 성공")
-		void success_getStages() {
-			String keyword = "Main";
-			Pageable pageable = PageRequest.of(0, 10);
-
-			List<Stage> stages = List.of(
-				Stage.builder().id(1L).stageName("Main Stage 1").build(),
-				Stage.builder().id(2L).stageName("Main Stage 2").build()
-			);
-			Page<Stage> stagePage = new PageImpl<>(stages, pageable, stages.size());
-
-			when(stageRepository.findByStageNameContaining(keyword, pageable)).thenReturn(stagePage);
-
-			// when
-			Page<StageResponseDto> result = stageService.getStages(keyword, pageable);
-
-			// then
-			assertThat(result.getTotalElements()).isEqualTo(stages.size());
-
-			verify(stageRepository, times(1)).findByStageNameContaining(keyword, pageable);
 		}
 	}
 

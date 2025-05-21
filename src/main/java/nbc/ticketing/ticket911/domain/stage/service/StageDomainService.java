@@ -1,5 +1,7 @@
 package nbc.ticketing.ticket911.domain.stage.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -26,5 +28,13 @@ public class StageDomainService {
 	public Stage findStageByStageIdOrElseThrow(Long stageId) {
 		return stageRepository.findById(stageId)
 			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
+	}
+
+	public Stage saveStage(Stage stage) {
+		return stageRepository.save(stage);
+	}
+
+	public Page<Stage> findStageWithKeyword(String keyword, Pageable pageable) {
+		return stageRepository.findByStageNameContaining(keyword, pageable);
 	}
 }

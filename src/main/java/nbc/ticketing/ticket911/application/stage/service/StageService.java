@@ -10,7 +10,6 @@ import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.request.UpdateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
-import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
 import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
 
 @Service
@@ -18,20 +17,19 @@ import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
 @Transactional(readOnly = true)
 public class StageService {
 
-	private final StageRepository stageRepository;
 	private final StageDomainService stageDomainService;
 
 	@Transactional
 	public StageResponseDto createStage(CreateStageRequestDto createStageRequestDto) {
 		Stage stage = stageDomainService.createStage(createStageRequestDto.getStageName());
 
-		Stage savedStage = stageRepository.save(stage);
+		Stage savedStage = stageDomainService.saveStage(stage);
 
 		return StageResponseDto.from(savedStage);
 	}
 
 	public Page<StageResponseDto> getStages(String keyword, Pageable pageable) {
-		Page<Stage> stagePage = stageRepository.findByStageNameContaining(keyword, pageable);
+		Page<Stage> stagePage = stageDomainService.findStageWithKeyword(keyword, pageable);
 
 		return stagePage.map(StageResponseDto::from);
 	}

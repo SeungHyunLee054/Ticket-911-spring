@@ -57,4 +57,12 @@ public class SeatDomainService {
 			throw new SeatException(SeatExceptionCode.SEAT_NOT_BELONG_TO_STAGE);
 		}
 	}
+
+	public void saveSeats(List<Seat> seats) {
+		seatRepository.saveAll(seats);
+	}
+
+	public void deleteSeat(Long seatId) {
+		seatRepository.deleteById(seatId);
+	}
 }

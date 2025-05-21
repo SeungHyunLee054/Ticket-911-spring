@@ -11,7 +11,6 @@ import nbc.ticketing.ticket911.domain.seat.dto.request.CreateSeatRequestDto;
 import nbc.ticketing.ticket911.domain.seat.dto.request.UpdateSeatRequestDto;
 import nbc.ticketing.ticket911.domain.seat.dto.response.SeatResponseDto;
 import nbc.ticketing.ticket911.domain.seat.entity.Seat;
-import nbc.ticketing.ticket911.domain.seat.repository.SeatRepository;
 import nbc.ticketing.ticket911.domain.seat.service.SeatDomainService;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
@@ -21,7 +20,6 @@ import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
 @Transactional(readOnly = true)
 public class SeatService {
 
-	private final SeatRepository seatRepository;
 	private final SeatDomainService seatDomainService;
 	private final StageDomainService stageDomainService;
 
@@ -31,7 +29,8 @@ public class SeatService {
 
 		List<Seat> seats = seatDomainService.createSeats(createSeatRequestDto, stage);
 
-		seatRepository.saveAll(seats);
+		seatDomainService.saveSeats(seats);
+
 		stage.updateTotalSeat(createSeatRequestDto.getSeatCount());
 
 		return seats.stream()
@@ -69,7 +68,7 @@ public class SeatService {
 
 		seatDomainService.verifySeat(seat, stage);
 
-		seatRepository.deleteById(seatId);
+		seatDomainService.deleteSeat(seatId);
 
 	}
 
