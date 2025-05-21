@@ -6,6 +6,8 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,6 +39,7 @@ public class Stage extends BaseEntity {
 	private String stageName;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private StageStatus stageStatus;
 
 	@Builder.Default

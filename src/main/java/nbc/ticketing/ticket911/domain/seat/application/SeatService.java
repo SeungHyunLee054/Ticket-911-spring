@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.application.seat.service;
+package nbc.ticketing.ticket911.domain.seat.application;
 
 import java.util.List;
 import java.util.stream.Collectors;

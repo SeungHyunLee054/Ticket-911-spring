@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.application.booking.service;
+package nbc.ticketing.ticket911.domain.booking.application;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -8,31 +8,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
-import nbc.ticketing.ticket911.domain.booking.constant.BookableStatus;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.dto.response.BookingResponseDto;
 import nbc.ticketing.ticket911.domain.booking.entity.Booking;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
-import nbc.ticketing.ticket911.domain.booking.repository.BookingRepository;
 import nbc.ticketing.ticket911.domain.booking.service.BookingDomainService;
-import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.service.ConcertDomainService;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
-import nbc.ticketing.ticket911.domain.concertseat.repository.ConcertSeatRepository;
 import nbc.ticketing.ticket911.domain.concertseat.service.ConcertSeatDomainService;
 import nbc.ticketing.ticket911.domain.user.entity.User;
-import nbc.ticketing.ticket911.domain.user.exception.UserException;
-import nbc.ticketing.ticket911.domain.user.exception.code.UserExceptionCode;
-import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
+import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 
 @Service
 @RequiredArgsConstructor
 public class BookingService {
 
-	private final UserRepository userRepository;
-	private final BookingRepository bookingRepository;
-	private final ConcertSeatRepository concertSeatRepository;
+	private final UserDomainService userDomainService;
 	private final BookingDomainService bookingDomainService;
 	private final ConcertDomainService concertDomainService;
 	private final ConcertSeatDomainService concertSeatDomainService;
@@ -40,38 +32,19 @@ public class BookingService {
 	@Transactional
 	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto bookingRequestDto) {
 
-		// 유저
-		User user = findUserByIdOrElseThrow(authUser);
+		User user = userDomainService.findActiveUserById(authUser.getId());
 
-		// 콘서트 좌석
-		List<ConcertSeat> concertSeats = concertSeatRepository.findAllById(bookingRequestDto.getSeatIds());
+		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(bookingRequestDto.getSeatIds());
 
-		// 콘서트
-		Concert concert = concertSeats.get(0).getConcert();
-
-		// 콘서트
-		BookableStatus status = concertDomainService.getBookableStatus(concert, LocalDateTime.now());
-		switch (status) {
-			case BEFORE_OPEN -> throw new BookingException(BookingExceptionCode.BOOKING_NOT_OPEN);
-			case AFTER_CLOSE -> throw new BookingException(BookingExceptionCode.BOOKING_CLOSED);
-			case BOOKABLE -> {
-			}
-		}
-
-		// 콘서트 좌석
-		concertSeatDomainService.validateAllSameConcert(concert, concertSeats);
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		concertSeatDomainService.validateAllSameConcert(concertSeats);
 		concertSeatDomainService.validateNotReserved(concertSeats);
 
-		Booking booking = Booking.builder()
-			.user(user)
-			.isCanceled(false)
-			.concertSeats(concertSeats)
-			.build();
+		Booking booking = bookingDomainService.createBooking(user, concertSeats);
 
-		bookingDomainService.pay(user, booking);
-		bookingRepository.save(booking);
+		int totalPrice = booking.getTotalPrice();
 
-		// 콘서트 좌석
+		userDomainService.minusPoint(user, totalPrice);
 		concertSeatDomainService.reserveAll(concertSeats);
 
 		return BookingResponseDto.from(booking);
@@ -80,10 +53,9 @@ public class BookingService {
 	@Transactional(readOnly = true)
 	public List<BookingResponseDto> getBookings(AuthUser authUser) {
 
-		// 유저
-		User user = findUserByIdOrElseThrow(authUser);
+		User user = userDomainService.findActiveUserById(authUser.getId());
 
-		List<Booking> bookings = bookingRepository.findAllByUser(user);
+		List<Booking> bookings = bookingDomainService.findAllByUser(user);
 
 		return bookings.stream()
 			.map(BookingResponseDto::from)
@@ -93,10 +65,9 @@ public class BookingService {
 	@Transactional(readOnly = true)
 	public BookingResponseDto getBooking(AuthUser authUser, Long bookingId) {
 
-		// 유저
-		User user = findUserByIdOrElseThrow(authUser);
+		User user = userDomainService.findActiveUserById(authUser.getId());
 
-		Booking booking = findBookingByIdOrElseThrow(bookingId);
+		Booking booking = bookingDomainService.findBookingByIdOrElseThrow(bookingId);
 
 		if (!booking.isOwnedBy(user)) {
 			throw new BookingException(BookingExceptionCode.NOT_OWN_BOOKING);
@@ -109,9 +80,9 @@ public class BookingService {
 	public void canceledBooking(AuthUser authUser, Long bookingId) {
 
 		// 유저
-		User user = findUserByIdOrElseThrow(authUser);
+		User user = userDomainService.findActiveUserById(authUser.getId());
 
-		Booking booking = findBookingByIdOrElseThrow(bookingId);
+		Booking booking = bookingDomainService.findBookingByIdOrElseThrow(bookingId);
 
 		if (!booking.isOwnedBy(user)) {
 			throw new BookingException(BookingExceptionCode.NOT_OWN_BOOKING);
@@ -125,18 +96,9 @@ public class BookingService {
 			throw new BookingException(BookingExceptionCode.CONCERT_STARTED_CANNOT_CANCEL);
 		}
 
-		// 콘서트 좌석
+		int totalPrice = booking.getTotalPrice();
+		userDomainService.chargePoint(user, totalPrice);
 		concertSeatDomainService.cancelAll(booking.getConcertSeats());
-		bookingDomainService.cancelBooking(user, booking);
-	}
-
-	private User findUserByIdOrElseThrow(AuthUser authUser) {
-		return userRepository.findById(authUser.getId())
-			.orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
-	}
-
-	private Booking findBookingByIdOrElseThrow(Long bookingId) {
-		return bookingRepository.findById(bookingId)
-			.orElseThrow(() -> new BookingException(BookingExceptionCode.BOOKING_NOT_FOUND));
+		bookingDomainService.cancelBooking(booking);
 	}
 }

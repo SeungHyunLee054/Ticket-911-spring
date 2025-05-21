@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.booking.constant.BookableStatus;
+import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
+import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
 import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertPageResponse;
@@ -16,6 +18,7 @@ import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
 import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
+import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 
@@ -92,23 +95,6 @@ public class ConcertDomainService {
 	 */
 	public void validateDeletable(Concert concert, Long userId) {
 		validateAuthor(concert, userId);
-	}
-
-	/**
-	 * 현재 시간 기준으로 공연 예매 가능 상태를 반환
-	 *
-	 * @param concert 공연 엔티티
-	 * @param now     현재 시간
-	 * @return BookableStatus (예매 전/중/종료)
-	 */
-	public BookableStatus getBookableStatus(Concert concert, LocalDateTime now) {
-		if (concert.getTicketOpen().isAfter(now)) {
-			return BookableStatus.BEFORE_OPEN;
-		}
-		if (concert.getTicketClose().isBefore(now)) {
-			return BookableStatus.AFTER_CLOSE;
-		}
-		return BookableStatus.BOOKABLE;
 	}
 
 	/**

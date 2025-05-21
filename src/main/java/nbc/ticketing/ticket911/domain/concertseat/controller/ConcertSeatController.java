@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.domain.concertseat.application.service.ConcertSeatService;
+import nbc.ticketing.ticket911.domain.concertseat.application.ConcertSeatService;
 import nbc.ticketing.ticket911.domain.concertseat.dto.response.ConcertSeatResponse;
 
 @RestController

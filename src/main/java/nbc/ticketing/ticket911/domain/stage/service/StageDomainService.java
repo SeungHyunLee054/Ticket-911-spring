@@ -37,4 +37,9 @@ public class StageDomainService {
 	public Page<Stage> findStageWithKeyword(String keyword, Pageable pageable) {
 		return stageRepository.findByStageNameContaining(keyword, pageable);
 	}
+
+	public Stage getStageWithSeatsById(Long stageId) {
+		return stageRepository.findByIdWithSeats(stageId)
+			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
+	}
 }

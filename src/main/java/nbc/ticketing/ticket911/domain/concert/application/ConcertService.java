@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.domain.concert.application.service;
+package nbc.ticketing.ticket911.domain.concert.application;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.domain.concertseat.application.service.ConcertSeatService;
+import nbc.ticketing.ticket911.domain.concertseat.application.ConcertSeatService;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertUpdateRequest;

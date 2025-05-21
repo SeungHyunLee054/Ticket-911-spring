@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.application.stage.service;
+package nbc.ticketing.ticket911.domain.stage.application;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
