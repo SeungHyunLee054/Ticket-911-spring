@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.application.booking.service.BookingService;
+import nbc.ticketing.ticket911.domain.booking.application.BookingService;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
