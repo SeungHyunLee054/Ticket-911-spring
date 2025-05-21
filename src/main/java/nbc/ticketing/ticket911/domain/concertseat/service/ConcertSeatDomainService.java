@@ -29,10 +29,11 @@ public class ConcertSeatDomainService {
 	 * @param seats 공연장에 포함된 좌석 목록
 	 * @return 생성된 공연 좌석 목록
 	 */
-	public List<ConcertSeat> createAll(Concert concert, List<Seat> seats) {
-		return seats.stream()
-			.map(seat -> ConcertSeat.of(concert, seat))
-			.collect(Collectors.toList());
+	public void createSeats(Concert concert, List<Seat> seats) {
+		List<ConcertSeat> concertSeats = seats.stream()
+			.map(seat -> ConcertSeat.create(concert, seat))
+			.toList();
+		concertSeatRepository.saveAll(concertSeats);
 	}
 
 	/**

@@ -1,12 +1,17 @@
 package nbc.ticketing.ticket911.domain.concert.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.booking.constant.BookableStatus;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
+import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertPageResponse;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
@@ -43,6 +48,13 @@ public class ConcertDomainService {
 			.isSoldOut(false)
 			.build();
 		return concertRepository.save(concert);
+	}
+
+	public Page<ConcertPageResponse> searchConcerts(
+		ConcertSearchCondition condition,
+		Pageable pageable
+	) {
+		return concertRepository.searchConcerts(condition, pageable);
 	}
 
 	/**
@@ -108,6 +120,21 @@ public class ConcertDomainService {
 	public Concert getConcertById(Long concertId) {
 		return concertRepository.findById(concertId)
 			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+	}
+
+	/**
+	 * 특정 시간(from ~ to)에 속하는 공연 목록 조회
+	 * @param from 조회 시작 시간 (inclusive)
+	 * @param to   조회 종료 시간 (inclusive)
+	 */
+	public List<Concert> getConcertsByTime(LocalDateTime from, LocalDateTime to) {
+		if (from == null || to == null) {
+			throw new ConcertException(ConcertExceptionCode.INVALID_SEARCH_PERIOD);
+		}
+		if (from.isAfter(to)) {
+			throw new ConcertException(ConcertExceptionCode.INVALID_SEARCH_PERIOD);
+		}
+		return concertRepository.findByStartTimeBetween(from, to);
 	}
 
 	/**

@@ -18,7 +18,7 @@ import nbc.ticketing.ticket911.domain.concert.entity.QConcert;
 import nbc.ticketing.ticket911.domain.stage.entity.QStage;
 
 @RequiredArgsConstructor
-public class ConcertRepositoryImpl implements ConcertQueryRepository {
+public class ConcertQueryRepositoryImpl implements ConcertQueryRepository {
 	private final JPAQueryFactory queryFactory;
 
 	QConcert concert = QConcert.concert;
@@ -41,6 +41,7 @@ public class ConcertRepositoryImpl implements ConcertQueryRepository {
 			.from(concert)
 			.join(concert.stage, stage)
 			.where(
+				notDeleted(),
 				titleContains(condition.getTitle()),
 				startTimeGte(condition.getStartTimeFrom()),
 				startTimeLte(condition.getStartTimeTo()),
@@ -88,6 +89,5 @@ public class ConcertRepositoryImpl implements ConcertQueryRepository {
 	private BooleanExpression notDeleted() {
 		return concert.deletedAt.isNull();
 	}
-
 
 }

@@ -50,11 +50,14 @@ public class ConcertSeat {
 	@Column(nullable = false)
 	private boolean isReserved;
 
-	public ConcertSeat(Object o, Concert concert, Seat seat, boolean b) {
+	private ConcertSeat(Concert concert, Seat seat) {
+		this.concert = concert;
+		this.seat    = seat;
+		this.isReserved = false;
 	}
 
-	public static ConcertSeat of(Concert concert, Seat seat) {
-		return new ConcertSeat(null, concert, seat, false);
+	public static ConcertSeat create(Concert concert, Seat seat) {
+		return new ConcertSeat(concert, seat);
 	}
 
 	public void reserve() {
