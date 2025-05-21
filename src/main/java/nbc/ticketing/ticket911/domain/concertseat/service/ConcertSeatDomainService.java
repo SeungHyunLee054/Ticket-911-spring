@@ -50,6 +50,16 @@ public class ConcertSeatDomainService {
 			.toList();
 	}
 
+	/**
+	 * 주어진 좌석 ID 목록으로 좌석 정보를 모두 조회합니다.
+	 * <p>
+	 * - 입력된 ID에 해당하는 좌석이 하나도 존재하지 않을 경우 예외를 발생시킵니다.
+	 * - 일부 좌석만 존재하더라도 예외를 발생시키지 않고 조회된 좌석만 반환합니다.
+	 *
+	 * @param ids 조회할 좌석 ID 리스트
+	 * @return 조회된 {@link ConcertSeat} 리스트 (비어 있지 않음)
+	 * @throws ConcertSeatException 입력된 ID로 조회된 좌석이 하나도 없을 경우 발생
+	 */
 	public List<ConcertSeat> findAllByIdOrThrow(List<Long> ids) {
 		List<ConcertSeat> seats = concertSeatRepository.findAllById(ids);
 
