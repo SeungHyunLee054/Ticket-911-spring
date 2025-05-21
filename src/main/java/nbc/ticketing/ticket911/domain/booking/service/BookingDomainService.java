@@ -1,28 +1,43 @@
 package nbc.ticketing.ticket911.domain.booking.service;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.booking.entity.Booking;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
+import nbc.ticketing.ticket911.domain.booking.repository.BookingRepository;
+import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.user.entity.User;
 
-@Component
+@Service
+@RequiredArgsConstructor
 public class BookingDomainService {
 
-	public void pay(User user, Booking booking) {
-		int totalPrice = booking.getTotalPrice();
+	private final BookingRepository bookingRepository;
 
-		if (user.getPoint() < totalPrice) {
-			throw new BookingException(BookingExceptionCode.PAYMENT_FAILED);
-		}
+	public Booking createBooking(User user, List<ConcertSeat> concertSeats) {
+		Booking booking = Booking.builder()
+			.user(user)
+			.isCanceled(false)
+			.concertSeats(concertSeats)
+			.build();
 
-		user.usePoint(totalPrice);
+		return bookingRepository.save(booking);
 	}
 
-	public void cancelBooking(User user, Booking booking) {
-		int refundPoint = booking.getTotalPrice();
-		user.refundPoint(refundPoint);
+	public List<Booking> findAllByUser(User user) {
+		return bookingRepository.findAllByUser(user);
+	}
+
+	public Booking findBookingByIdOrElseThrow(Long bookingId) {
+		return bookingRepository.findById(bookingId)
+			.orElseThrow(() -> new BookingException(BookingExceptionCode.BOOKING_NOT_FOUND));
+	}
+
+	public void cancelBooking(Booking booking) {
 		booking.canceledBooking();
 	}
 }
