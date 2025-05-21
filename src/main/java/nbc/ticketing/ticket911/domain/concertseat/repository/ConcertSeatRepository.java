@@ -11,8 +11,8 @@ import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 @Repository
 public interface ConcertSeatRepository extends JpaRepository<ConcertSeat, Long> {
 
-	Optional<ConcertSeat> findByConcertIdAndSeatId(Long concertId, Long seatId);
+	Optional<ConcertSeat> findByConcert_IdAndSeat_Id(Long concertId, Long seatId);
 
-	List<ConcertSeat> findByConcertId(Long concertId);
+	List<ConcertSeat> findByConcert_Id(Long concertId);
 
 }

@@ -1,9 +1,7 @@
 package nbc.ticketing.ticket911.domain.concertseat.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -13,6 +11,8 @@ import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCod
 import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
 import nbc.ticketing.ticket911.domain.concertseat.dto.response.ConcertSeatResponse;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
+import nbc.ticketing.ticket911.domain.concertseat.exception.ConcertSeatException;
+import nbc.ticketing.ticket911.domain.concertseat.exception.code.ConcertSeatExceptionCode;
 import nbc.ticketing.ticket911.domain.concertseat.repository.ConcertSeatRepository;
 import nbc.ticketing.ticket911.domain.seat.entity.Seat;
 
@@ -43,11 +43,21 @@ public class ConcertSeatDomainService {
 	 * @return 공연 좌석 응답 목록
 	 */
 	public List<ConcertSeatResponse> getSeatResponsesByConcertId(Long concertId) {
-		List<ConcertSeat> seats = concertSeatRepository.findByConcertId(concertId);
+		List<ConcertSeat> seats = concertSeatRepository.findByConcert_Id(concertId);
 
 		return seats.stream()
 			.map(ConcertSeatResponse::from)
 			.toList();
+	}
+
+	public List<ConcertSeat> findAllByIdOrThrow(List<Long> ids) {
+		List<ConcertSeat> seats = concertSeatRepository.findAllById(ids);
+
+		if (seats.isEmpty()) {
+			throw new ConcertSeatException(ConcertSeatExceptionCode.INVALID_SEAT_SELECTION);
+		}
+
+		return seats;
 	}
 
 	/**
@@ -68,13 +78,18 @@ public class ConcertSeatDomainService {
 	 * 반환하므로 매서드 이름도 그에 맞춰서 바꾸는게 어떨까요?)
 	 * ex : hasSeatsFromDifferentConcert
 	 *
-	 * @param concert 기준 공연
 	 * @param concertSeats 검사할 공연 좌석 목록
 	 * @return 하나라도 다른 공연이면 true 반환
 	 */
-	public boolean validateAllSameConcert(Concert concert, List<ConcertSeat> concertSeats) {
-		return concertSeats.stream()
-			.anyMatch(seat -> !seat.getConcertId().equals(concert.getId()));
+	public void validateAllSameConcert(List<ConcertSeat> concertSeats) {
+
+		Long concertId = concertSeats.get(0).getConcertId();
+		boolean hasDifferentConcert = concertSeats.stream()
+			.anyMatch(seat -> !seat.getConcertId().equals(concertId));
+
+		if (hasDifferentConcert) {
+			throw new ConcertSeatException(ConcertSeatExceptionCode.DIFFERENT_CONCERTS_NOT_ALLOWED);
+		}
 	}
 
 	/**
@@ -86,9 +101,13 @@ public class ConcertSeatDomainService {
 	 * @param concertSeats 검사할 공연 좌석 목록
 	 * @return 예약된 좌석이 하나라도 있으면 true 반환
 	 */
-	public boolean validateNotReserved(List<ConcertSeat> concertSeats) {
-		return concertSeats.stream()
+	public void validateNotReserved(List<ConcertSeat> concertSeats) {
+		boolean hasReserved = concertSeats.stream()
 			.anyMatch(ConcertSeat::isReserved);
+
+		if (hasReserved) {
+			throw new ConcertSeatException(ConcertSeatExceptionCode.SEAT_ALREADY_RESERVED);
+		}
 	}
 
 	/**
