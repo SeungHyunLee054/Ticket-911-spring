@@ -10,44 +10,39 @@ import nbc.ticketing.ticket911.domain.stage.dto.request.CreateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.request.UpdateStageRequestDto;
 import nbc.ticketing.ticket911.domain.stage.dto.response.StageResponseDto;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
-import nbc.ticketing.ticket911.domain.stage.exception.StageException;
-import nbc.ticketing.ticket911.domain.stage.exception.code.StageExceptionCode;
-import nbc.ticketing.ticket911.domain.stage.repository.StageRepository;
-import nbc.ticketing.ticket911.domain.stage.status.StageStatus;
+import nbc.ticketing.ticket911.domain.stage.service.StageDomainService;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class StageService {
 
-	private final StageRepository stageRepository;
+	private final StageDomainService stageDomainService;
 
 	@Transactional
 	public StageResponseDto createStage(CreateStageRequestDto createStageRequestDto) {
-		Stage stage = Stage.builder()
-			.stageName(createStageRequestDto.getStageName())
-			.totalSeat(0L)
-			.stageStatus(StageStatus.AVAILABLE)
-			.build();
+		Stage stage = stageDomainService.createStage(createStageRequestDto.getStageName());
 
-		Stage savedStage = stageRepository.save(stage);
+		Stage savedStage = stageDomainService.saveStage(stage);
 
 		return StageResponseDto.from(savedStage);
 	}
 
 	public Page<StageResponseDto> getStages(String keyword, Pageable pageable) {
-		Page<Stage> stagePage = stageRepository.findByStageNameContaining(keyword, pageable);
+		Page<Stage> stagePage = stageDomainService.findStageWithKeyword(keyword, pageable);
+
 		return stagePage.map(StageResponseDto::from);
 	}
 
 	public StageResponseDto getStage(Long stageId) {
-		Stage stage = getStageByStageIdOrElseThrow(stageId);
+		Stage stage = stageDomainService.findStageByStageIdOrElseThrow(stageId);
+
 		return StageResponseDto.from(stage);
 	}
 
 	@Transactional
-	public StageResponseDto updateService(Long stageId, UpdateStageRequestDto updateStageRequestDto) {
-		Stage stage = getStageByStageIdOrElseThrow(stageId);
+	public StageResponseDto updateStage(Long stageId, UpdateStageRequestDto updateStageRequestDto) {
+		Stage stage = stageDomainService.findStageByStageIdOrElseThrow(stageId);
 
 		if (updateStageRequestDto.getStageName() != null) {
 			stage.updateStageName(updateStageRequestDto.getStageName());
@@ -59,8 +54,4 @@ public class StageService {
 		return StageResponseDto.from(stage);
 	}
 
-	public Stage getStageByStageIdOrElseThrow(Long stageId) {
-		return stageRepository.findById(stageId)
-			.orElseThrow(() -> new StageException(StageExceptionCode.STAGE_NOT_FOUND));
-	}
 }
