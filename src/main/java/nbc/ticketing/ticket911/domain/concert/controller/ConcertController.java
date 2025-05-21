@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.application.concert.service.ConcertService;
+import nbc.ticketing.ticket911.domain.concert.application.service.ConcertService;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;

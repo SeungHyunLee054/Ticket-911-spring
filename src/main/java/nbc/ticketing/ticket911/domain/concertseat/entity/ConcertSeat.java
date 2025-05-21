@@ -50,6 +50,16 @@ public class ConcertSeat {
 	@Column(nullable = false)
 	private boolean isReserved;
 
+	private ConcertSeat(Concert concert, Seat seat) {
+		this.concert = concert;
+		this.seat    = seat;
+		this.isReserved = false;
+	}
+
+	public static ConcertSeat create(Concert concert, Seat seat) {
+		return new ConcertSeat(concert, seat);
+	}
+
 	public void reserve() {
 		this.isReserved = true;
 	}

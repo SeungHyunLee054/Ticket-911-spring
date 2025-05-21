@@ -13,7 +13,8 @@ public enum ConcertExceptionCode {
 	TICKET_OPEN_AFTER_START(false, HttpStatus.BAD_REQUEST, "예매 오픈 시간은 공연 시작 시간보다 빠르거나 같아야 합니다."),
 	TICKET_CLOSE_BEFORE_OPEN(false, HttpStatus.BAD_REQUEST, "예매 마감 시간은 예매 시작 시간보다 같거나 늦어야 합니다."),
 	PAST_CONCERT_DATE(false, HttpStatus.BAD_REQUEST, "과거 날짜로 공연을 등록할 수 없습니다."),
-	CONCERT_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 공연이 존재하지 않습니다");
+	CONCERT_NOT_FOUND(false, HttpStatus.NOT_FOUND, "해당 공연이 존재하지 않습니다"),
+	INVALID_SEARCH_PERIOD(false, HttpStatus.BAD_REQUEST, "유효하지 않은 기간입니다.");
 	private final boolean success;
 	private final HttpStatus status;
 	private final String message;

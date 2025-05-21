@@ -1,19 +1,61 @@
 package nbc.ticketing.ticket911.domain.concert.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-import org.springframework.stereotype.Component;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import nbc.ticketing.ticket911.domain.booking.constant.BookableStatus;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
+import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertSearchCondition;
+import nbc.ticketing.ticket911.domain.concert.dto.response.ConcertPageResponse;
 import nbc.ticketing.ticket911.domain.concert.entity.Concert;
 import nbc.ticketing.ticket911.domain.concert.exception.ConcertException;
 import nbc.ticketing.ticket911.domain.concert.exception.code.ConcertExceptionCode;
+import nbc.ticketing.ticket911.domain.concert.repository.ConcertRepository;
+import nbc.ticketing.ticket911.domain.stage.entity.Stage;
+import nbc.ticketing.ticket911.domain.user.entity.User;
 
 /**
  * 공연(Concert) 도메인 관련 비즈니스 검증을 담당하는 서비스
  */
-@Component
+@Service
+@RequiredArgsConstructor
 public class ConcertDomainService {
+
+	private final ConcertRepository concertRepository;
+
+	/**
+	 * 공연 생성
+	 *
+	 * @param user 공연 등록자
+	 * @param stage 공연장 정보
+	 * @param request 새성 요청 DTO
+	 * @return 생성된 Concert 객체
+	 */
+	public Concert createConcert(User user, Stage stage, ConcertCreateRequest request) {
+		Concert concert = Concert.builder()
+			.user(user)
+			.stage(stage)
+			.title(request.getTitle())
+			.description(request.getDescription())
+			.startTime(request.getStartTime())
+			.ticketOpen(request.getTicketOpen())
+			.ticketClose(request.getTicketClose())
+			.isSoldOut(false)
+			.build();
+		return concertRepository.save(concert);
+	}
+
+	public Page<ConcertPageResponse> searchConcerts(
+		ConcertSearchCondition condition,
+		Pageable pageable
+	) {
+		return concertRepository.searchConcerts(condition, pageable);
+	}
 
 	/**
 	 * 공연 생성 시의 시간 조건들을 통합 검증
@@ -52,6 +94,13 @@ public class ConcertDomainService {
 		validateAuthor(concert, userId);
 	}
 
+	/**
+	 * 현재 시간 기준으로 공연 예매 가능 상태를 반환
+	 *
+	 * @param concert 공연 엔티티
+	 * @param now     현재 시간
+	 * @return BookableStatus (예매 전/중/종료)
+	 */
 	public BookableStatus getBookableStatus(Concert concert, LocalDateTime now) {
 		if (concert.getTicketOpen().isAfter(now)) {
 			return BookableStatus.BEFORE_OPEN;
@@ -60,6 +109,44 @@ public class ConcertDomainService {
 			return BookableStatus.AFTER_CLOSE;
 		}
 		return BookableStatus.BOOKABLE;
+	}
+
+	/**
+	 * 공연 ID로 공연을 조회
+	 *
+	 * @param concertId 공연 ID
+	 * @return Concert 엔티티
+	 */
+	public Concert getConcertById(Long concertId) {
+		return concertRepository.findById(concertId)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
+	}
+
+	/**
+	 * 특정 시간(from ~ to)에 속하는 공연 목록 조회
+	 * @param from 조회 시작 시간 (inclusive)
+	 * @param to   조회 종료 시간 (inclusive)
+	 */
+	public List<Concert> getConcertsByTime(LocalDateTime from, LocalDateTime to) {
+		if (from == null || to == null) {
+			throw new ConcertException(ConcertExceptionCode.INVALID_SEARCH_PERIOD);
+		}
+		if (from.isAfter(to)) {
+			throw new ConcertException(ConcertExceptionCode.INVALID_SEARCH_PERIOD);
+		}
+		return concertRepository.findByStartTimeBetween(from, to);
+	}
+
+	/**
+	 * 공연 ID로 삭제되지 않은 공연을 조회
+	 *
+	 * @param concertId 공연 ID
+	 * @return Concert 엔티티
+	 */
+	public Concert getActiveConcertById(Long concertId) {
+		return concertRepository.findById(concertId)
+			.filter(c -> c.getDeletedAt() == null)
+			.orElseThrow(() -> new ConcertException(ConcertExceptionCode.CONCERT_NOT_FOUND));
 	}
 
 	/**
