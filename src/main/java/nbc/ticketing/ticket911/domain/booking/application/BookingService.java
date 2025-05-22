@@ -101,4 +101,25 @@ public class BookingService {
 		concertSeatDomainService.cancelAll(booking.getConcertSeats());
 		bookingDomainService.cancelBooking(booking);
 	}
+
+	@Transactional
+	public BookingResponseDto createBookingByMySQL(AuthUser authUser, BookingRequestDto bookingRequestDto) {
+		User user = userDomainService.findActiveUserById(authUser.getId());
+
+		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdForUpdate(bookingRequestDto.getSeatIds());
+
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		concertSeatDomainService.validateAllSameConcert(concertSeats);
+		concertSeatDomainService.validateNotReserved(concertSeats);
+
+		Booking booking = bookingDomainService.createBooking(user, concertSeats);
+
+		int totalPrice = booking.getTotalPrice();
+
+		userDomainService.minusPoint(user, totalPrice);
+		concertSeatDomainService.reserveAll(concertSeats);
+
+		return BookingResponseDto.from(booking);
+
+	}
 }
