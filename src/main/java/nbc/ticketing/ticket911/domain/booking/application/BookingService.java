@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.dto.response.BookingResponseDto;
@@ -14,7 +15,6 @@ import nbc.ticketing.ticket911.domain.booking.entity.Booking;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
 import nbc.ticketing.ticket911.domain.booking.service.BookingDomainService;
-import nbc.ticketing.ticket911.domain.concert.service.ConcertDomainService;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.concertseat.service.ConcertSeatDomainService;
 import nbc.ticketing.ticket911.domain.user.entity.User;
@@ -26,10 +26,10 @@ public class BookingService {
 
 	private final UserDomainService userDomainService;
 	private final BookingDomainService bookingDomainService;
-	private final ConcertDomainService concertDomainService;
 	private final ConcertSeatDomainService concertSeatDomainService;
 
-	@Transactional
+	@RedissonMultiLock(key = "#bookingRequestDto.seatIds", group = "concertSeat")
+	// @Transactional
 	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto bookingRequestDto) {
 
 		User user = userDomainService.findActiveUserById(authUser.getId());

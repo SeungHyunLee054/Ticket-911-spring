@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.common.lock;
+package nbc.ticketing.ticket911.common.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,12 +9,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RedissonLock {
+public @interface RedissonMultiLock {
 	String key();
 
 	String group() default "";
 
-	long waitTime() default 3L;
+	long waitTime() default 10L;
 
-	long leaseTime() default 2L;
+	long leaseTime() default 10L;
 }
