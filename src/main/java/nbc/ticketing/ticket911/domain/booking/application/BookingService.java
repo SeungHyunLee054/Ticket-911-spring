@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import nbc.ticketing.ticket911.common.lock.lettuce.LettuceLockManager;
+import nbc.ticketing.ticket911.common.lock.lettuce.LettuceMultiLock;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.dto.response.BookingResponseDto;
@@ -28,26 +30,40 @@ public class BookingService {
 	private final BookingDomainService bookingDomainService;
 	private final ConcertDomainService concertDomainService;
 	private final ConcertSeatDomainService concertSeatDomainService;
+	private final LettuceLockManager lettuceLockManager;
 
 	@Transactional
-	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto bookingRequestDto) {
-
+	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto dto) {
 		User user = userDomainService.findActiveUserById(authUser.getId());
+		List<Long> seatIds = dto.getSeatIds();
 
-		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(bookingRequestDto.getSeatIds());
+		// 1. 락 키 생성
+		List<String> lockKeys = seatIds.stream()
+			.map(id -> "lock:seat:" + id)
+			.toList();
 
-		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
-		concertSeatDomainService.validateAllSameConcert(concertSeats);
-		concertSeatDomainService.validateNotReserved(concertSeats);
+		// 2. 락 객체 생성
+		LettuceMultiLock multiLock = new LettuceMultiLock(lockKeys, 5000L, lettuceLockManager);
 
-		Booking booking = bookingDomainService.createBooking(user, concertSeats);
+		if (!multiLock.tryLockAll()) {
+			throw new BookingException(BookingExceptionCode.LOCK_ACQUIRE_FAIL);
+		}
 
-		int totalPrice = booking.getTotalPrice();
+		try {
+			List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(seatIds);
 
-		userDomainService.minusPoint(user, totalPrice);
-		concertSeatDomainService.reserveAll(concertSeats);
+			bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+			concertSeatDomainService.validateAllSameConcert(concertSeats);
+			concertSeatDomainService.validateNotReserved(concertSeats);
 
-		return BookingResponseDto.from(booking);
+			Booking booking = bookingDomainService.createBooking(user, concertSeats);
+			userDomainService.minusPoint(user, booking.getTotalPrice());
+			concertSeatDomainService.reserveAll(concertSeats);
+
+			return BookingResponseDto.from(booking);
+		} finally {
+			multiLock.unlockAll();
+		}
 	}
 
 	@Transactional(readOnly = true)

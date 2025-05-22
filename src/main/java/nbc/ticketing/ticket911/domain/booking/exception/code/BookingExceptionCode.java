@@ -19,7 +19,10 @@ public enum BookingExceptionCode {
 
 	// 취소 실패 관련
 	ALREADY_CANCELED(false, HttpStatus.BAD_REQUEST, "이미 취소된 예약입니다."),
-	CONCERT_STARTED_CANNOT_CANCEL(false, HttpStatus.FORBIDDEN, "공연 시작 후에는 예약을 취소할 수 없습니다.");
+	CONCERT_STARTED_CANNOT_CANCEL(false, HttpStatus.FORBIDDEN, "공연 시작 후에는 예약을 취소할 수 없습니다."),
+	// 락 관련
+	LOCK_ACQUIRE_FAIL(false, HttpStatus.LOCKED, "예약 도중 좌석이 이미 예약되었습니다."),
+	LOCK_INTERRUPTED(false, HttpStatus.INTERNAL_SERVER_ERROR, "예약 처리 중 중단되었습니다.");
 
 	private final boolean success;
 	private final HttpStatus status;

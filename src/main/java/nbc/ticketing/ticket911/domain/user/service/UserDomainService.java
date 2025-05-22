@@ -199,4 +199,5 @@ public class UserDomainService {
 		return userRepository.findByEmail(email)
 			.orElseThrow(() -> new UserException(UserExceptionCode.USER_NOT_FOUND));
 	}
+
 }
