@@ -23,14 +23,9 @@ public class RedissonLockRedisRepository implements LockRedisRepository {
 	public boolean lock(String key, long waitTime, long leaseTime) {
 		RLock lock = redissonClient.getLock(key);
 		try {
-			boolean acquired = lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
-			log.info("[{}] 락 획득 결과: {}", key, acquired);
-			return acquired;
+			return lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			if (lock.isHeldByCurrentThread()) {
-				lock.unlock();
-			}
 			throw new LockRedisException(LockRedisExceptionCode.LOCK_INTERRUPTED);
 		} catch (Exception e) {
 			log.error("락 획득 중 시스템 예외 발생: {}", e.getMessage(), e);

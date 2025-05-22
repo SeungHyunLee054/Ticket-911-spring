@@ -1,9 +1,8 @@
 package nbc.ticketing.ticket911.infrastructure.redisson;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.concurrent.Callable;
 
 import org.springframework.stereotype.Service;
 
@@ -20,33 +19,39 @@ public class RedissonLockRedisService implements LockRedisService {
 	private final LockRedisRepository lockRedisRepository;
 
 	@Override
-	public <T> T executeWithLock(String key, long waitTime, long leaseTime, Supplier<T> action) {
+	public <T> T executeWithLock(String key, long waitTime, long leaseTime, Callable<T> action) {
 		boolean locked = lockRedisRepository.lock(key, waitTime, leaseTime);
 		if (!locked) {
 			throw new LockRedisException(LockRedisExceptionCode.LOCK_TIMEOUT);
 		}
-
 		try {
-			return action.get();
+			return action.call();
+		} catch (RuntimeException re) {
+			throw re;
+		} catch (Exception e) {
+			throw new LockRedisException(LockRedisExceptionCode.LOCK_PROCEED_FAIL);
 		} finally {
 			lockRedisRepository.unlock(key);
 		}
 	}
 
 	@Override
-	public void executeWithMultiLock(List<String> keys, long waitTime, long leaseTime) {
-		List<String> sortedKeys = new ArrayList<>(keys);
-		Collections.sort(keys);
+	public <T> T executeWithMultiLock(List<String> keys, long waitTime, long leaseTime, Callable<T> action) {
 		List<String> lockedKeys = new ArrayList<>();
 
 		try {
-			for (String key : sortedKeys) {
+			for (String key : keys) {
 				boolean locked = lockRedisRepository.lock(key, waitTime, leaseTime);
 				if (!locked) {
 					throw new LockRedisException(LockRedisExceptionCode.LOCK_TIMEOUT);
 				}
 				lockedKeys.add(key);
 			}
+			return action.call();
+		} catch (RuntimeException re) {
+			throw re;
+		} catch (Exception e) {
+			throw new LockRedisException(LockRedisExceptionCode.LOCK_PROCEED_FAIL);
 		} finally {
 			for (String key : lockedKeys) {
 				lockRedisRepository.unlock(key);

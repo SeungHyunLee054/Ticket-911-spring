@@ -29,7 +29,7 @@ public class BookingService {
 	private final ConcertSeatDomainService concertSeatDomainService;
 
 	@RedissonMultiLock(key = "#bookingRequestDto.seatIds", group = "concertSeat")
-	// @Transactional
+	@Transactional
 	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto bookingRequestDto) {
 
 		User user = userDomainService.findActiveUserById(authUser.getId());
