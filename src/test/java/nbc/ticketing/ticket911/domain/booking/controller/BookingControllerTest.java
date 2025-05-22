@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.application.BookingService;
@@ -35,6 +36,7 @@ import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class BookingControllerTest {
 
 	@Autowired
@@ -64,7 +66,7 @@ class BookingControllerTest {
 		User user = userRepository.save(User.builder()
 			.email("test@example.com")
 			.nickname("test")
-			.point(100000)
+			.point(100000000)
 			.roles(Set.of(UserRole.ROLE_USER))
 			.build());
 
@@ -83,7 +85,7 @@ class BookingControllerTest {
 		Seat seat = seatRepository.save(Seat.builder()
 			.stage(stage)
 			.seatName("A-1")
-			.seatPrice(5000L)
+			.seatPrice(50L)
 			.build());
 
 		Concert concert = concertRepository.save(Concert.builder()
@@ -108,7 +110,7 @@ class BookingControllerTest {
 
 	@Test
 	void ConcurrencyProblem() throws InterruptedException {
-		int threadCount = 100;
+		int threadCount = 300;
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 		CountDownLatch latch = new CountDownLatch(threadCount);
 
@@ -150,5 +152,5 @@ class BookingControllerTest {
 
 		assertThat(successCount).isLessThanOrEqualTo(1);
 	}
-	
+
 }
