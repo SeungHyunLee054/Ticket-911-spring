@@ -1,7 +1,6 @@
 package nbc.ticketing.ticket911.domain.lock;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -12,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
@@ -20,12 +20,12 @@ import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 public class BookingConcurrencyTest {
 
 	@Autowired
 	private BookingService bookingService;
 
-	private final ExecutorService executorService = Executors.newFixedThreadPool(10);
 	private final int THREAD_COUNT = 10;
 
 	@Test
