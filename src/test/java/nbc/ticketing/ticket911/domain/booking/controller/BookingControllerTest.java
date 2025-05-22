@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.application.BookingService;
@@ -36,7 +35,6 @@ import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 class BookingControllerTest {
 
 	@Autowired
