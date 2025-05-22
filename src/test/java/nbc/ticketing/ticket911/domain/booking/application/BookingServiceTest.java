@@ -154,5 +154,41 @@ class BookingServiceTest {
 
 		assertThat(resultStats.getOrDefault("성공", 0L)).isEqualTo(1);
 	}
+	@Test
+	void 동시_예매_테스트_좌석은_하나만_성공해야_한다_AOP기반() throws InterruptedException {
+		int threadCount = 100;
+		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+		CountDownLatch latch = new CountDownLatch(threadCount);
+
+		User savedUser = userRepository.findAll().get(0);
+		AuthUser authUser = AuthUser.of(savedUser.getId(), savedUser.getEmail(), savedUser.getRoles());
+		BookingRequestDto dto = new BookingRequestDto(List.of(savedConcertSeatId));
+
+		List<String> results = Collections.synchronizedList(new ArrayList<>());
+
+		for (int i = 0; i < threadCount; i++) {
+			executor.submit(() -> {
+				try {
+					bookingService.createBookingWithAop(authUser, dto);
+					results.add("성공");
+				} catch (BookingException e) {
+					results.add(e.getErrorCode().name());
+				} finally {
+					latch.countDown();
+				}
+			});
+		}
+
+		latch.await();
+
+		Map<String, Long> resultStats = results.stream()
+			.collect(Collectors.groupingBy(r -> r, Collectors.counting()));
+
+		resultStats.forEach((result, count) -> {
+			System.out.println("[" + result + "] = " + count + "건");
+		});
+
+		assertThat(resultStats.getOrDefault("성공", 0L)).isEqualTo(1);
+	}
 
 }

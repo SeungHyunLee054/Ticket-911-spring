@@ -14,7 +14,7 @@ public @interface RedissonLock {
 
 	String group() default "";
 
-	long waitTime() default 3L;
+	long waitTime() default 1000L;
 
-	long leaseTime() default 2L;
+	long leaseTime() default 1000L;
 }

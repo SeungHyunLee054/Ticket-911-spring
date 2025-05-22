@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import nbc.ticketing.ticket911.common.lock.RedissonLock;
 import nbc.ticketing.ticket911.common.lock.lettuce.LettuceLockManager;
 import nbc.ticketing.ticket911.common.lock.lettuce.LettuceMultiLock;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
@@ -64,6 +65,25 @@ public class BookingService {
 		} finally {
 			multiLock.unlockAll();
 		}
+	}
+
+	@RedissonLock(key = "#dto.seatIds[0]", group = "seat", leaseTime = 5L)
+	@Transactional
+	public BookingResponseDto createBookingWithAop(AuthUser authUser, BookingRequestDto dto) {
+		User user = userDomainService.findActiveUserById(authUser.getId());
+		List<Long> seatIds = dto.getSeatIds();
+
+		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(seatIds);
+
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		concertSeatDomainService.validateAllSameConcert(concertSeats);
+		concertSeatDomainService.validateNotReserved(concertSeats);
+
+		Booking booking = bookingDomainService.createBooking(user, concertSeats);
+		userDomainService.minusPoint(user, booking.getTotalPrice());
+		concertSeatDomainService.reserveAll(concertSeats);
+
+		return BookingResponseDto.from(booking);
 	}
 
 	@Transactional(readOnly = true)
