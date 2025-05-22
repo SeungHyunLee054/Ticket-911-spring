@@ -6,12 +6,14 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import nbc.ticketing.ticket911.domain.user.constant.UserRole;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class AuthUser {
 	private Long id;
 	private String email;
