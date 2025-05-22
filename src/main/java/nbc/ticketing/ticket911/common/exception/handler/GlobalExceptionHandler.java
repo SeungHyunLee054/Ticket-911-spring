@@ -22,7 +22,7 @@ import nbc.ticketing.ticket911.common.response.CommonResponse;
 public class GlobalExceptionHandler {
 	@ExceptionHandler(BaseException.class)
 	public ResponseEntity<CommonResponse<?>> handleBaseException(BaseException baseException) {
-		log.error("exception : {}", baseException.getMessage());
+		log.error("exception : {}", baseException.getMessage(), baseException);
 
 		return ResponseEntity.status(baseException.getHttpStatus())
 			.body(CommonResponse.of(false, baseException.getHttpStatus().value(), baseException.getMessage()));
