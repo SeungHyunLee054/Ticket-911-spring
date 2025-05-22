@@ -43,7 +43,7 @@ import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class BookingServiceTest {
+class LettuceLockManagerTest {
 	@Autowired
 	private BookingService bookingService;
 
