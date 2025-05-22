@@ -10,10 +10,10 @@ import io.lettuce.core.RedisClient;
 @Configuration
 public class LettuceConfig {
 
-	@Value("${spring.data.redis.host}")
+	@Value("${redis.host}")
 	private String redisHost;
 
-	@Value("${spring.data.redis.port}")
+	@Value("${redis.port}")
 	private int redisPort;
 
 	@Bean
