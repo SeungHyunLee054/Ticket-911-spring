@@ -28,7 +28,7 @@ import nbc.ticketing.ticket911.domain.user.entity.User;
 import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 
 @ExtendWith(MockitoExtension.class)
-class ConcertServiceTest {
+class LettuceLockTest {
 
 	@Mock
 	private UserDomainService userDomainService;

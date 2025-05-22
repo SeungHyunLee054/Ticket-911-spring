@@ -3,9 +3,15 @@ package nbc.ticketing.ticket911.common.lock.lettuce;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RequiredArgsConstructor
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class LettuceMultiLock {
 
 	private final List<String> keys;
@@ -17,6 +23,7 @@ public class LettuceMultiLock {
 	public boolean tryLockAll() {
 		for (String key : keys) {
 			boolean locked = lockManager.tryLock(key, lockValue, expireMillis);
+			log.debug("Seat {} lock status: {}", key, locked);
 			if (!locked) {
 				unlockAll();
 				return false;
