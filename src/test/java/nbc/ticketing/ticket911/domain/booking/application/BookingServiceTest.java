@@ -115,7 +115,7 @@ class BookingServiceTest {
 		);
 
 		ConcertSeat concertSeat = concertSeatRepository.save(ConcertSeat.create(savedConcert, savedSeat));
-		savedConcertSeatId = concertSeat.getId(); // 테스트용으로 저장
+		savedConcertSeatId = concertSeat.getId();
 	}
 
 	@Test
@@ -124,8 +124,7 @@ class BookingServiceTest {
 		ExecutorService executor = Executors.newFixedThreadPool(threadCount);
 		CountDownLatch latch = new CountDownLatch(threadCount);
 
-		// 💡 저장된 유저의 정보를 가져옵니다
-		User savedUser = userRepository.findAll().get(0); // 또는 별도로 savedUser 필드로 관리
+		User savedUser = userRepository.findAll().get(0);
 		AuthUser authUser = AuthUser.of(savedUser.getId(), savedUser.getEmail(), savedUser.getRoles());
 		BookingRequestDto dto = new BookingRequestDto(List.of(savedConcertSeatId));
 
