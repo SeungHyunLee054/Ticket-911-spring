@@ -35,7 +35,6 @@ import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles("test")
 public class BookingConcurrencyTest {
 
 	@Autowired
