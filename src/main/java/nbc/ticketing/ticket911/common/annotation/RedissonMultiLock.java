@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.common.annotation;
+package nbc.ticketing.ticket911.common.lock;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

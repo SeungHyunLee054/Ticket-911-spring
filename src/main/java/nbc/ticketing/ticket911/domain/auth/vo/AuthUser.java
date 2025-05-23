@@ -22,4 +22,8 @@ public class AuthUser {
 			.map(r -> new SimpleGrantedAuthority(r.name()))
 			.toList();
 	}
+
+	public static AuthUser of(Long id, String email, Set<UserRole> roles) {
+		return new AuthUser(id, email, roles);
+	}
 }
