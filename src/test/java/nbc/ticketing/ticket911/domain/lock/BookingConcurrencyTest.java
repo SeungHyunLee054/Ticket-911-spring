@@ -14,7 +14,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
@@ -117,7 +116,7 @@ public class BookingConcurrencyTest {
 
 		for (int i = 0; i < THREAD_COUNT; i++) {
 				try {
-					bookingService.createBooking(authUser, bookingRequestDto);
+					bookingService.createBookingLettuce(authUser, bookingRequestDto);
 					log.info("[{}] 예매 성공", Thread.currentThread().getName());
 					successCount.incrementAndGet();
 				} catch (Exception e) {

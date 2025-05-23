@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class LettuceConfig {
+import io.lettuce.core.RedisClient;
 
-	@Value("${redis.host}")
+@Configuration
+public class RedisConfig {
+
+	@Value("${data.redis.host}")
 	private String redisHost;
-	@Value("${redis.port}")
+
+	@Value("${data.redis.port}")
 	private int redisPort;
 
 	@Bean
@@ -21,5 +24,10 @@ public class LettuceConfig {
 		config.useSingleServer()
 			.setAddress("redis://" + redisHost + ":" + redisPort);
 		return Redisson.create(config);
+	}
+
+	@Bean
+	public RedisClient redisClient() {
+		return RedisClient.create("redis://" + redisHost + ":" + redisPort);
 	}
 }

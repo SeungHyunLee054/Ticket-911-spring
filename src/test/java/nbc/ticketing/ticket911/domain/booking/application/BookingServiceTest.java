@@ -133,7 +133,7 @@ class LettuceLockManagerTest {
 		for (int i = 0; i < threadCount; i++) {
 			executor.submit(() -> {
 				try {
-					bookingService.createBooking(authUser, dto);
+					bookingService.createBookingLettuce(authUser, dto);
 					results.add("성공");
 				} catch (BookingException e) {
 					results.add(e.getErrorCode().name());
