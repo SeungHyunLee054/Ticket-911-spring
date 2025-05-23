@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.common.lock.lettuce;
+package nbc.ticketing.ticket911.infrastructure.lettuce;
 
 import java.util.List;
 import java.util.function.Supplier;

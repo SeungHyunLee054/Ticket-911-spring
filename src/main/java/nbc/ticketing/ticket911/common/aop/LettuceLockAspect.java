@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.common.lock.lettuce;
+package nbc.ticketing.ticket911.common.aop;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 
 import nbc.ticketing.ticket911.common.lock.RedissonMultiLock;
+import nbc.ticketing.ticket911.infrastructure.lettuce.LettuceLockManager;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
 
