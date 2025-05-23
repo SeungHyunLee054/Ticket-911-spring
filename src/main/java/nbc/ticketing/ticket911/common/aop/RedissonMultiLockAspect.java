@@ -39,7 +39,6 @@ public class RedissonMultiLockAspect {
 		RedissonMultiLock annotation = method.getAnnotation(RedissonMultiLock.class);
 
 		List<String> lockKeys;
-
 		List<String> dynamicKeys = parseKeyList(annotation.key(), joinPoint);
 		lockKeys = dynamicKeys.stream()
 			.map(key -> buildLockKey(annotation.group(), key))
@@ -49,19 +48,7 @@ public class RedissonMultiLockAspect {
 			lockKeys,
 			annotation.waitTime(),
 			annotation.leaseTime(),
-			() -> {
-				try {
-					return joinPoint.proceed();
-				} catch (Throwable e) {
-					if (e instanceof Error) {
-						throw (Error)e;
-					}
-					if (e instanceof RuntimeException) {
-						throw (RuntimeException)e;
-					}
-					throw new RuntimeException(e);
-				}
-			}
+			joinPoint::proceed
 		);
 	}
 
