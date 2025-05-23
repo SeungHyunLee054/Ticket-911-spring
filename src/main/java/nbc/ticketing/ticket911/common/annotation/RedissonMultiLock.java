@@ -9,12 +9,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RedissonLock {
+public @interface RedissonMultiLock {
 	String key();
 
 	String group() default "";
 
-	long waitTime() default 1000L;
+	long waitTime() default 10L;
 
-	long leaseTime() default 1000L;
+	long leaseTime() default 10L;
 }

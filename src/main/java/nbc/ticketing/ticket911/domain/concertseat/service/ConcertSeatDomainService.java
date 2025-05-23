@@ -137,4 +137,14 @@ public class ConcertSeatDomainService {
 	public void cancelAll(List<ConcertSeat> concertSeats) {
 		concertSeats.forEach(ConcertSeat::cancelReservation);
 	}
+
+	public List<ConcertSeat> findAllByIdForUpdate(List<Long> seatIds) {
+		List<ConcertSeat> seats = concertSeatRepository.findAllByIdInWithLock(seatIds);
+
+		if (seats.isEmpty()) {
+			throw new ConcertSeatException(ConcertSeatExceptionCode.INVALID_SEAT_SELECTION);
+		}
+
+		return seats;
+	}
 }
