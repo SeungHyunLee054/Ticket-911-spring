@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.domain.booking.application.BookingFacade;
-import nbc.ticketing.ticket911.domain.booking.application.BookingService;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
+import nbc.ticketing.ticket911.domain.booking.application.BookingFacade;
+import nbc.ticketing.ticket911.domain.booking.application.BookingService;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.dto.response.BookingResponseDto;
 
@@ -32,6 +32,17 @@ public class BookingController {
 
 	@PostMapping
 	public ResponseEntity<CommonResponse<BookingResponseDto>> createBooking(
+		@AuthenticationPrincipal AuthUser authUser,
+		@Valid @RequestBody BookingRequestDto bookingRequestDto) {
+
+		BookingResponseDto bookingResponseDto = bookingFacade.createBookingWithLock(authUser, bookingRequestDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(CommonResponse.of(true, HttpStatus.CREATED.value(), "예약 성공", bookingResponseDto));
+	}
+
+	@PostMapping("/lettuce")
+	public ResponseEntity<CommonResponse<BookingResponseDto>> createBookingLettuce(
 		@AuthenticationPrincipal AuthUser authUser,
 		@Valid @RequestBody BookingRequestDto bookingRequestDto) {
 

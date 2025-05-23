@@ -33,7 +33,7 @@ public class BookingService {
 
 	@RedissonMultiLock(key = "#bookingRequestDto.seatIds", group = "concertSeat")
 	@Transactional
-	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto bookingRequestDto) {
+	public BookingResponseDto createBookingLettuce(AuthUser authUser, BookingRequestDto bookingRequestDto) {
 
 		User user = userDomainService.findActiveUserById(authUser.getId());
 
