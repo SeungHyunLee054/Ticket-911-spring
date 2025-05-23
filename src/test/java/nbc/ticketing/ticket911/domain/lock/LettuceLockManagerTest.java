@@ -1,4 +1,4 @@
-package nbc.ticketing.ticket911.domain.booking.application;
+package nbc.ticketing.ticket911.domain.lock;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -19,10 +19,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
+import nbc.ticketing.ticket911.domain.booking.application.BookingService;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.service.BookingDomainService;
@@ -53,7 +54,7 @@ class LettuceLockManagerTest {
 	@Autowired
 	private BookingDomainService bookingDomainService;
 
-	@MockBean
+	@MockitoBean
 	private UserDomainService userDomainService;
 	@Autowired
 	private ConcertSeatRepository concertSeatRepository;
@@ -133,7 +134,7 @@ class LettuceLockManagerTest {
 		for (int i = 0; i < threadCount; i++) {
 			executor.submit(() -> {
 				try {
-					bookingService.createBookingLettuce(authUser, dto);
+					bookingService.createBookingByLettuce(authUser, dto);
 					results.add("성공");
 				} catch (BookingException e) {
 					results.add(e.getErrorCode().name());
@@ -169,7 +170,7 @@ class LettuceLockManagerTest {
 		for (int i = 0; i < threadCount; i++) {
 			executor.submit(() -> {
 				try {
-					bookingService.createBookingWithAop(authUser, dto);
+					bookingService.createBookingByLettuce(authUser, dto);
 					results.add("성공");
 				} catch (BookingException e) {
 					results.add(e.getErrorCode().name());

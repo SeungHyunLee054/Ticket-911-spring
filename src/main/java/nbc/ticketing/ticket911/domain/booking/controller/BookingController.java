@@ -35,18 +35,40 @@ public class BookingController {
 		@AuthenticationPrincipal AuthUser authUser,
 		@Valid @RequestBody BookingRequestDto bookingRequestDto) {
 
-		BookingResponseDto bookingResponseDto = bookingFacade.createBookingWithLock(authUser, bookingRequestDto);
+		BookingResponseDto bookingResponseDto = bookingService.createBooking(authUser, bookingRequestDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(CommonResponse.of(true, HttpStatus.CREATED.value(), "예약 성공", bookingResponseDto));
 	}
 
 	@PostMapping("/lettuce")
-	public ResponseEntity<CommonResponse<BookingResponseDto>> createBookingLettuce(
+	public ResponseEntity<CommonResponse<BookingResponseDto>> createBookingByLettuce(
 		@AuthenticationPrincipal AuthUser authUser,
 		@Valid @RequestBody BookingRequestDto bookingRequestDto) {
 
 		BookingResponseDto bookingResponseDto = bookingFacade.createBookingWithLock(authUser, bookingRequestDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(CommonResponse.of(true, HttpStatus.CREATED.value(), "예약 성공", bookingResponseDto));
+	}
+
+	@PostMapping("/mysql")
+	public ResponseEntity<CommonResponse<BookingResponseDto>> createBookingByMySql(
+		@AuthenticationPrincipal AuthUser authUser,
+		@Valid @RequestBody BookingRequestDto bookingRequestDto) {
+
+		BookingResponseDto bookingResponseDto = bookingService.createBookingByMySQL(authUser, bookingRequestDto);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+			.body(CommonResponse.of(true, HttpStatus.CREATED.value(), "예약 성공", bookingResponseDto));
+	}
+
+	@PostMapping("/redisson")
+	public ResponseEntity<CommonResponse<BookingResponseDto>> createBookingByRedisson(
+		@AuthenticationPrincipal AuthUser authUser,
+		@Valid @RequestBody BookingRequestDto bookingRequestDto) {
+
+		BookingResponseDto bookingResponseDto = bookingService.createBookingByRedisson(authUser, bookingRequestDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 			.body(CommonResponse.of(true, HttpStatus.CREATED.value(), "예약 성공", bookingResponseDto));

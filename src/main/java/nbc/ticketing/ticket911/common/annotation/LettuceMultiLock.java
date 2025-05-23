@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RedissonMultiLock {
+public @interface LettuceMultiLock {
 	String key();
 
 	String group() default "";
@@ -21,3 +21,4 @@ public @interface RedissonMultiLock {
 
 	TimeUnit timeUnit() default TimeUnit.SECONDS;
 }
+

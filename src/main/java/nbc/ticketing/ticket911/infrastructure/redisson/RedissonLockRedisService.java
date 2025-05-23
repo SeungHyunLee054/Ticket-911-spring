@@ -2,6 +2,7 @@ package nbc.ticketing.ticket911.infrastructure.redisson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,9 @@ public class RedissonLockRedisService implements LockRedisService {
 	private final LockRedisRepository lockRedisRepository;
 
 	@Override
-	public <T> T executeWithLock(String key, long waitTime, long leaseTime, ThrowingSupplier<T> action) {
-		boolean locked = lockRedisRepository.lock(key, waitTime, leaseTime);
+	public <T> T executeWithLock(String key, long waitTime, long leaseTime, TimeUnit timeUnit,
+		ThrowingSupplier<T> action) {
+		boolean locked = lockRedisRepository.lock(key, waitTime, leaseTime, timeUnit);
 		if (!locked) {
 			throw new LockRedisException(LockRedisExceptionCode.LOCK_TIMEOUT);
 		}
@@ -42,13 +44,14 @@ public class RedissonLockRedisService implements LockRedisService {
 	}
 
 	@Override
-	public <T> T executeWithMultiLock(List<String> keys, long waitTime, long leaseTime, ThrowingSupplier<T> action)
+	public <T> T executeWithMultiLock(List<String> keys, long waitTime, long leaseTime, TimeUnit timeUnit,
+		ThrowingSupplier<T> action)
 		throws LockRedisException {
 		List<String> lockedKeys = new ArrayList<>();
 
 		try {
 			for (String key : keys) {
-				boolean locked = lockRedisRepository.lock(key, waitTime, leaseTime);
+				boolean locked = lockRedisRepository.lock(key, waitTime, leaseTime, timeUnit);
 				if (!locked) {
 					throw new LockRedisException(LockRedisExceptionCode.LOCK_TIMEOUT);
 				}
