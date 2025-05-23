@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.common.lock.RedissonLock;
-import nbc.ticketing.ticket911.common.lock.lettuce.DistributedLockService;
-import nbc.ticketing.ticket911.common.lock.lettuce.LettuceLockManager;
-import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
+
+import nbc.ticketing.ticket911.common.lock.RedissonMultiLock;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.dto.response.BookingResponseDto;

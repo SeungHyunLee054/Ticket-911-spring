@@ -13,7 +13,8 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.common.lock.RedissonLock;
+
+import nbc.ticketing.ticket911.common.lock.RedissonMultiLock;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
 
@@ -24,7 +25,7 @@ public class LettuceLockAspect {
 	private final LettuceLockManager lockManager;
 
 	@Around("@annotation(redissonLock)")
-	public Object lock(ProceedingJoinPoint joinPoint, RedissonLock redissonLock) throws Throwable {
+	public Object lock(ProceedingJoinPoint joinPoint, RedissonMultiLock redissonLock) throws Throwable {
 		String key = resolveKey(joinPoint, redissonLock);
 		String lockKey = "lock:" + (redissonLock.group().isEmpty() ? "" : redissonLock.group() + ":") + key;
 		String lockValue = UUID.randomUUID().toString();
@@ -41,7 +42,7 @@ public class LettuceLockAspect {
 		}
 	}
 
-	private String resolveKey(ProceedingJoinPoint joinPoint, RedissonLock redissonLock) {
+	private String resolveKey(ProceedingJoinPoint joinPoint, RedissonMultiLock redissonLock) {
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
 		String[] parameterNames = signature.getParameterNames();
