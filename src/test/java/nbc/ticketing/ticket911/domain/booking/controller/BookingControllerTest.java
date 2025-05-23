@@ -117,7 +117,7 @@ class BookingControllerTest {
 		for (int i = 0; i < threadCount; i++) {
 			results.add(executor.submit(() -> {
 				try {
-					bookingService.createBookingLettuce(authUser, bookingRequestDto);
+					bookingService.createBookingByLettuce(authUser, bookingRequestDto);
 					return "성공";
 				} catch (Exception e) {
 					return "실패: " + e.getMessage();

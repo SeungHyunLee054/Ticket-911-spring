@@ -1,6 +1,5 @@
 package nbc.ticketing.ticket911.common.aop;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -14,7 +13,8 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-import nbc.ticketing.ticket911.common.lock.RedissonMultiLock;
+import nbc.ticketing.ticket911.common.annotation.LettuceMultiLock;
+import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
 import nbc.ticketing.ticket911.infrastructure.lettuce.LettuceLockManager;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
@@ -25,13 +25,13 @@ import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCod
 public class LettuceLockAspect {
 	private final LettuceLockManager lockManager;
 
-	@Around("@annotation(redissonLock)")
-	public Object lock(ProceedingJoinPoint joinPoint, RedissonMultiLock redissonLock) throws Throwable {
-		String key = resolveKey(joinPoint, redissonLock);
-		String lockKey = "lock:" + (redissonLock.group().isEmpty() ? "" : redissonLock.group() + ":") + key;
+	@Around("@annotation(lettuceLock)")
+	public Object lock(ProceedingJoinPoint joinPoint, LettuceMultiLock lettuceLock) throws Throwable {
+		String key = resolveKey(joinPoint, lettuceLock);
+		String lockKey = "lock:" + (lettuceLock.group().isEmpty() ? "" : lettuceLock.group() + ":") + key;
 		String lockValue = UUID.randomUUID().toString();
 
-		boolean locked = lockManager.tryLock(lockKey, lockValue, redissonLock.leaseTime() * 1000);
+		boolean locked = lockManager.tryLock(lockKey, lockValue, lettuceLock.leaseTime() * 1000);
 		if (!locked) {
 			throw new BookingException(BookingExceptionCode.LOCK_ACQUIRE_FAIL);
 		}
@@ -43,9 +43,8 @@ public class LettuceLockAspect {
 		}
 	}
 
-	private String resolveKey(ProceedingJoinPoint joinPoint, RedissonMultiLock redissonLock) {
-		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-		Method method = signature.getMethod();
+	private String resolveKey(ProceedingJoinPoint joinPoint, LettuceMultiLock lettuceLock) {
+		MethodSignature signature = (MethodSignature)joinPoint.getSignature();
 		String[] parameterNames = signature.getParameterNames();
 		Object[] args = joinPoint.getArgs();
 
@@ -55,6 +54,6 @@ public class LettuceLockAspect {
 		}
 
 		ExpressionParser parser = new SpelExpressionParser();
-		return parser.parseExpression(redissonLock.key()).getValue(context, String.class);
+		return parser.parseExpression(lettuceLock.key()).getValue(context, String.class);
 	}
 }

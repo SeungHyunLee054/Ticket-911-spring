@@ -20,10 +20,10 @@ public class RedissonLockRedisRepository implements LockRedisRepository {
 	private final RedissonClient redissonClient;
 
 	@Override
-	public boolean lock(String key, long waitTime, long leaseTime) {
+	public boolean lock(String key, long waitTime, long leaseTime, TimeUnit timeUnit) {
 		RLock lock = redissonClient.getLock(key);
 		try {
-			return lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
+			return lock.tryLock(waitTime, leaseTime, timeUnit);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new LockRedisException(LockRedisExceptionCode.LOCK_INTERRUPTED);

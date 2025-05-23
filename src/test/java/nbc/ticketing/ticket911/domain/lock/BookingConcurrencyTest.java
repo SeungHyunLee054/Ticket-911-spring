@@ -13,7 +13,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
@@ -33,8 +40,22 @@ import nbc.ticketing.ticket911.domain.user.entity.User;
 import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @Slf4j
+@Testcontainers
+@ActiveProfiles("test")
 @SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class BookingConcurrencyTest {
+
+	@Container
+	static GenericContainer<?> redis =
+		new GenericContainer<>("redis:6.2-alpine")
+			.withExposedPorts(6379);
+
+	@DynamicPropertySource
+	static void redisProperties(DynamicPropertyRegistry reg) {
+		reg.add("spring.data.redis.host", redis::getHost);
+		reg.add("spring.data.redis.port", redis::getFirstMappedPort);
+	}
 
 	@Autowired
 	private BookingService bookingService;
@@ -62,6 +83,7 @@ public class BookingConcurrencyTest {
 
 	@BeforeEach
 	void setUp() {
+		System.out.println(">>> bookingService class = " + bookingService.getClass().getName());
 		User user = userRepository.save(User.builder()
 			.email("test@example.com")
 			.nickname("test")
@@ -115,8 +137,9 @@ public class BookingConcurrencyTest {
 		AtomicInteger failCount = new AtomicInteger();
 
 		for (int i = 0; i < THREAD_COUNT; i++) {
+			executorService.execute(() -> {
 				try {
-					bookingService.createBookingLettuce(authUser, bookingRequestDto);
+					bookingService.createBookingByRedisson(authUser, bookingRequestDto);
 					log.info("[{}] 예매 성공", Thread.currentThread().getName());
 					successCount.incrementAndGet();
 				} catch (Exception e) {
@@ -125,13 +148,11 @@ public class BookingConcurrencyTest {
 				} finally {
 					latch.countDown();
 				}
+			});
 		}
 
 		latch.await();
 		executorService.shutdown();
-
-		log.info("총 성공 횟수: {}", successCount.get());
-		log.info("총 실패 횟수: {}", failCount.get());
 
 		assertEquals(1, successCount.get(), "예매는 오직 한 명만 성공해야 합니다.");
 		assertEquals(THREAD_COUNT - 1, failCount.get(), "나머지 쓰레드는 모두 실패해야 합니다.");

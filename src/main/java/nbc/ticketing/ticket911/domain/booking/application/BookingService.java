@@ -8,7 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import nbc.ticketing.ticket911.common.lock.RedissonMultiLock;
+import nbc.ticketing.ticket911.common.annotation.LettuceMultiLock;
+import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
 import nbc.ticketing.ticket911.domain.booking.dto.response.BookingResponseDto;
@@ -16,7 +17,6 @@ import nbc.ticketing.ticket911.domain.booking.entity.Booking;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
 import nbc.ticketing.ticket911.domain.booking.service.BookingDomainService;
-import nbc.ticketing.ticket911.domain.concert.service.ConcertDomainService;
 import nbc.ticketing.ticket911.domain.concertseat.entity.ConcertSeat;
 import nbc.ticketing.ticket911.domain.concertseat.service.ConcertSeatDomainService;
 import nbc.ticketing.ticket911.domain.user.entity.User;
@@ -28,12 +28,75 @@ public class BookingService {
 
 	private final UserDomainService userDomainService;
 	private final BookingDomainService bookingDomainService;
-	private final ConcertDomainService concertDomainService;
 	private final ConcertSeatDomainService concertSeatDomainService;
+
+	@Transactional
+	public BookingResponseDto createBooking(AuthUser authUser, BookingRequestDto bookingRequestDto) {
+
+		User user = userDomainService.findActiveUserById(authUser.getId());
+
+		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(bookingRequestDto.getSeatIds());
+
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		concertSeatDomainService.validateAllSameConcert(concertSeats);
+		concertSeatDomainService.validateNotReserved(concertSeats);
+
+		Booking booking = bookingDomainService.createBooking(user, concertSeats);
+
+		int totalPrice = booking.getTotalPrice();
+
+		userDomainService.minusPoint(user, totalPrice);
+		concertSeatDomainService.reserveAll(concertSeats);
+
+		return BookingResponseDto.from(booking);
+	}
+
+	@LettuceMultiLock(key = "#bookingRequestDto.seatIds", group = "concertSeat")
+	@Transactional
+	public BookingResponseDto createBookingByLettuce(AuthUser authUser, BookingRequestDto bookingRequestDto) {
+
+		User user = userDomainService.findActiveUserById(authUser.getId());
+
+		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdOrThrow(bookingRequestDto.getSeatIds());
+
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		concertSeatDomainService.validateAllSameConcert(concertSeats);
+		concertSeatDomainService.validateNotReserved(concertSeats);
+
+		Booking booking = bookingDomainService.createBooking(user, concertSeats);
+
+		int totalPrice = booking.getTotalPrice();
+
+		userDomainService.minusPoint(user, totalPrice);
+		concertSeatDomainService.reserveAll(concertSeats);
+
+		return BookingResponseDto.from(booking);
+	}
+
+	@Transactional
+	public BookingResponseDto createBookingByMySQL(AuthUser authUser, BookingRequestDto bookingRequestDto) {
+		User user = userDomainService.findActiveUserById(authUser.getId());
+
+		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdForUpdate(bookingRequestDto.getSeatIds());
+
+		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
+		concertSeatDomainService.validateAllSameConcert(concertSeats);
+		concertSeatDomainService.validateNotReserved(concertSeats);
+
+		Booking booking = bookingDomainService.createBooking(user, concertSeats);
+
+		int totalPrice = booking.getTotalPrice();
+
+		userDomainService.minusPoint(user, totalPrice);
+		concertSeatDomainService.reserveAll(concertSeats);
+
+		return BookingResponseDto.from(booking);
+
+	}
 
 	@RedissonMultiLock(key = "#bookingRequestDto.seatIds", group = "concertSeat")
 	@Transactional
-	public BookingResponseDto createBookingLettuce(AuthUser authUser, BookingRequestDto bookingRequestDto) {
+	public BookingResponseDto createBookingByRedisson(AuthUser authUser, BookingRequestDto bookingRequestDto) {
 
 		User user = userDomainService.findActiveUserById(authUser.getId());
 
@@ -105,24 +168,4 @@ public class BookingService {
 		bookingDomainService.cancelBooking(booking);
 	}
 
-	@Transactional
-	public BookingResponseDto createBookingByMySQL(AuthUser authUser, BookingRequestDto bookingRequestDto) {
-		User user = userDomainService.findActiveUserById(authUser.getId());
-
-		List<ConcertSeat> concertSeats = concertSeatDomainService.findAllByIdForUpdate(bookingRequestDto.getSeatIds());
-
-		bookingDomainService.validateBookable(concertSeats, LocalDateTime.now());
-		concertSeatDomainService.validateAllSameConcert(concertSeats);
-		concertSeatDomainService.validateNotReserved(concertSeats);
-
-		Booking booking = bookingDomainService.createBooking(user, concertSeats);
-
-		int totalPrice = booking.getTotalPrice();
-
-		userDomainService.minusPoint(user, totalPrice);
-		concertSeatDomainService.reserveAll(concertSeats);
-
-		return BookingResponseDto.from(booking);
-
-	}
 }

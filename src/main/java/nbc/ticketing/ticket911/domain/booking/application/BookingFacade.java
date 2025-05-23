@@ -25,6 +25,6 @@ public class BookingFacade {
 			.toList();
 
 		return lockService.runWithLock(lockKeys, 10_000L,
-			() -> bookingService.createBookingLettuce(authUser, dto));
+			() -> bookingService.createBookingByLettuce(authUser, dto));
 	}
 }
