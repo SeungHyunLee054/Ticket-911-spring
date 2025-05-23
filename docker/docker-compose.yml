@@ -2,9 +2,7 @@ version: "3.9"
 
 services:
   app:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    image: shlee054/ticket911-app:latest
     container_name: ticket911-app
     ports:
       - "8080:8080"

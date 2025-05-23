@@ -30,8 +30,17 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_KEY }}
           port: '22'
-          source: "./docker"
+          source: "./docker/docker-compose.yml, docker/.env"
           target: "~/app"
+
+      - name: Login to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t shlee054/ticket911-app:latest ./docker
+
+      - name: Push Docker image
+        run: docker push shlee054/ticket911-app:latest
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@master
@@ -69,11 +78,7 @@ jobs:
             # Kill existing Java Processes
             pkill -f 'java -jar' || true
             
-            # Deploy with Docker Compose
-            cd ~/app/docker || exit 1
-            docker compose down --remove-orphans || true
-            docker compose up --build -d
-            
-            echo "Waiting for containers to be up..."
-            sleep 10
-            docker compose ps
+            cd ~/app || exit 1
+            sudo docker compose pull
+            sudo docker compose down --remove-orphans || true
+            sudo docker compose up -d
