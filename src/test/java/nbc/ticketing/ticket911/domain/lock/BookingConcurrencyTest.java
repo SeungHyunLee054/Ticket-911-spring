@@ -54,7 +54,8 @@ public class BookingConcurrencyTest {
 	static GenericContainer<?> redis =
 		new GenericContainer<>("redis:6.2-alpine")
 			.withExposedPorts(6379)
-	 		.waitingFor(Wait.forListeningPort());
+	 		.waitingFor(Wait.forListeningPort())
+			.withStartupAttempts(5);
 
 	@DynamicPropertySource
 	static void redisProperties(DynamicPropertyRegistry reg) {
@@ -87,8 +88,9 @@ public class BookingConcurrencyTest {
 	private final int THREAD_COUNT = 10;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws InterruptedException {
 		System.out.println(">>> bookingService class = " + bookingService.getClass().getName());
+		Thread.sleep(3000);
 		User user = userRepository.save(User.builder()
 			.email("test@example.com")
 			.nickname("test")

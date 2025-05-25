@@ -24,9 +24,9 @@ public class RedisConfig {
 		config.useSingleServer()
 			.setAddress("redis://" + redisHost + ":" + redisPort)
 			.setConnectionMinimumIdleSize(1)
-			.setConnectionPoolSize(2)
-			.setConnectTimeout(3000)
-			.setTimeout(5000);
+			.setConnectionPoolSize(5)
+			.setConnectTimeout(10000)
+			.setTimeout(10000);
 		return Redisson.create(config);
 	}
 
