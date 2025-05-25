@@ -17,13 +17,11 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
 import nbc.ticketing.ticket911.domain.lock.LockRedisService;
 import nbc.ticketing.ticket911.infrastructure.redisson.exception.LockRedisException;
 import nbc.ticketing.ticket911.infrastructure.redisson.exception.code.LockRedisExceptionCode;
 
-@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
