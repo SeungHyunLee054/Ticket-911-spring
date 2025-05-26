@@ -22,6 +22,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import nbc.ticketing.ticket911.common.aop.RedissonMultiLockAspect;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
@@ -45,11 +52,24 @@ import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 
 @SpringBootTest
+@Testcontainers
 @ActiveProfiles("test")
 @Import(RedissonMultiLockAspect.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class LettuceLockManagerTest {
+	@Container
+	static GenericContainer<?> redis =
+		new GenericContainer<>(DockerImageName.parse("redis:7.0-alpine"))
+			.withExposedPorts(6379)
+			.waitingFor(Wait.forListeningPort())
+			.withStartupAttempts(5);
+
+	@DynamicPropertySource
+	static void redisProperties(DynamicPropertyRegistry reg) {
+		reg.add("spring.data.redis.host", redis::getHost);
+		reg.add("spring.data.redis.port", redis::getFirstMappedPort);
+	}
+
 	@Autowired
 	private BookingService bookingService;
 
