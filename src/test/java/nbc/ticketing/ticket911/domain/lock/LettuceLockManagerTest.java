@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import nbc.ticketing.ticket911.common.aop.RedissonMultiLockAspect;
@@ -47,6 +48,7 @@ import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 @ActiveProfiles("test")
 @Import(RedissonMultiLockAspect.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class LettuceLockManagerTest {
 	@Autowired
 	private BookingService bookingService;
