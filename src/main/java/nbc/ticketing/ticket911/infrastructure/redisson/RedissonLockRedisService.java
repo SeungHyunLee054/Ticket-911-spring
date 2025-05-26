@@ -28,16 +28,8 @@ public class RedissonLockRedisService implements LockRedisService {
 		}
 		try {
 			return action.get();
-		} catch (LockRedisException lre) {
-			throw lre;
 		} catch (Throwable t) {
-			if (t instanceof RuntimeException re) {
-				throw re;
-			}
-			if (t instanceof Error err) {
-				throw err;
-			}
-			throw new LockRedisException(LockRedisExceptionCode.LOCK_PROCEED_FAIL);
+			throw wrapThrowable(t);
 		} finally {
 			lockRedisRepository.unlock(key);
 		}
@@ -45,8 +37,7 @@ public class RedissonLockRedisService implements LockRedisService {
 
 	@Override
 	public <T> T executeWithMultiLock(List<String> keys, long waitTime, long leaseTime, TimeUnit timeUnit,
-		ThrowingSupplier<T> action)
-		throws LockRedisException {
+		ThrowingSupplier<T> action) {
 		List<String> lockedKeys = new ArrayList<>();
 
 		try {
@@ -58,20 +49,19 @@ public class RedissonLockRedisService implements LockRedisService {
 				lockedKeys.add(key);
 			}
 			return action.get();
-		} catch (LockRedisException lre) {
-			throw lre;
 		} catch (Throwable t) {
-			if (t instanceof RuntimeException re) {
-				throw re;
-			}
-			if (t instanceof Error err) {
-				throw err;
-			}
-			throw new LockRedisException(LockRedisExceptionCode.LOCK_PROCEED_FAIL);
+			throw wrapThrowable(t);
 		} finally {
 			for (String key : lockedKeys) {
 				lockRedisRepository.unlock(key);
 			}
 		}
+	}
+
+	private RuntimeException wrapThrowable(Throwable t) {
+		if (t instanceof LockRedisException e) return e;
+		if (t instanceof RuntimeException e) return e;
+		if (t instanceof Error e) throw e;
+		return new LockRedisException(LockRedisExceptionCode.LOCK_PROCEED_FAIL);
 	}
 }

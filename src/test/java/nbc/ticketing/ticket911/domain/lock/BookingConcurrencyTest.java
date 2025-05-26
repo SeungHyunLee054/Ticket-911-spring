@@ -15,14 +15,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import lombok.extern.slf4j.Slf4j;
+import nbc.ticketing.ticket911.common.aop.RedissonMultiLockAspect;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.application.BookingService;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
@@ -43,13 +47,16 @@ import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 @Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest
+@Import(RedissonMultiLockAspect.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class BookingConcurrencyTest {
 
 	@Container
 	static GenericContainer<?> redis =
-		new GenericContainer<>("redis:6.2-alpine")
-			.withExposedPorts(6379);
+		new GenericContainer<>(DockerImageName.parse("redis:7.0-alpine"))
+			.withExposedPorts(6379)
+	 		.waitingFor(Wait.forListeningPort())
+			.withStartupAttempts(5);
 
 	@DynamicPropertySource
 	static void redisProperties(DynamicPropertyRegistry reg) {
@@ -82,8 +89,9 @@ public class BookingConcurrencyTest {
 	private final int THREAD_COUNT = 10;
 
 	@BeforeEach
-	void setUp() {
+	void setUp() throws InterruptedException {
 		System.out.println(">>> bookingService class = " + bookingService.getClass().getName());
+		Thread.sleep(3000);
 		User user = userRepository.save(User.builder()
 			.email("test@example.com")
 			.nickname("test")
