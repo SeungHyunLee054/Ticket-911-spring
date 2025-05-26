@@ -12,12 +12,10 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
-
 import nbc.ticketing.ticket911.common.annotation.LettuceMultiLock;
-import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
-import nbc.ticketing.ticket911.infrastructure.lettuce.LettuceLockManager;
 import nbc.ticketing.ticket911.domain.booking.exception.BookingException;
 import nbc.ticketing.ticket911.domain.booking.exception.code.BookingExceptionCode;
+import nbc.ticketing.ticket911.infrastructure.lettuce.LettuceLockManager;
 
 @Aspect
 @Component
