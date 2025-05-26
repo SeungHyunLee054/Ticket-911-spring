@@ -17,9 +17,12 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import nbc.ticketing.ticket911.common.aop.RedissonMultiLockAspect;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.application.BookingService;
 import nbc.ticketing.ticket911.domain.booking.dto.request.BookingRequestDto;
@@ -42,6 +45,8 @@ import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Import(RedissonMultiLockAspect.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class LettuceLockManagerTest {
 	@Autowired
 	private BookingService bookingService;
