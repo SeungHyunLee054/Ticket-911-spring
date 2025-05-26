@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import nbc.ticketing.ticket911.domain.seat.application.SeatService;
 import nbc.ticketing.ticket911.common.response.CommonResponse;
+import nbc.ticketing.ticket911.domain.seat.application.SeatService;
 import nbc.ticketing.ticket911.domain.seat.dto.request.CreateSeatRequestDto;
 import nbc.ticketing.ticket911.domain.seat.dto.request.UpdateSeatRequestDto;
 import nbc.ticketing.ticket911.domain.seat.dto.response.SeatResponseDto;

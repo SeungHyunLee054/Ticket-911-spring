@@ -10,7 +10,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import nbc.ticketing.ticket911.domain.concert.dto.request.ConcertCreateRequest;
@@ -29,13 +30,19 @@ import nbc.ticketing.ticket911.domain.user.service.UserDomainService;
 @ExtendWith(MockitoExtension.class)
 class ConcertServiceTest {
 
-	@Mock private UserDomainService userDomainService;
-	@Mock private StageDomainService stageDomainService;
-	@Mock private ConcertDomainService concertDomainService;
-	@Mock private ConcertRepository concertRepository;
-	@Mock private ConcertSeatService concertSeatService;
+	@Mock
+	private UserDomainService userDomainService;
+	@Mock
+	private StageDomainService stageDomainService;
+	@Mock
+	private ConcertDomainService concertDomainService;
+	@Mock
+	private ConcertRepository concertRepository;
+	@Mock
+	private ConcertSeatService concertSeatService;
 
-	@InjectMocks private ConcertService concertService;
+	@InjectMocks
+	private ConcertService concertService;
 
 	private Long userId = 1L;
 	private Long stageId = 2L;
@@ -145,7 +152,8 @@ class ConcertServiceTest {
 
 		given(concertDomainService.getConcertById(concertId)).willReturn(concert);
 		willDoNothing().given(concertDomainService)
-			.validateCreatable(updateRequest.getStartTime(), updateRequest.getTicketOpen(), updateRequest.getTicketClose());
+			.validateCreatable(updateRequest.getStartTime(), updateRequest.getTicketOpen(),
+				updateRequest.getTicketClose());
 		willDoNothing().given(concertDomainService).validateUpdatable(concert, userId);
 
 		ConcertDetailResponse response = concertService.updateConcert(concertId, userId, updateRequest);
