@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import nbc.ticketing.ticket911.domain.stage.entity.Stage;
 
 public interface StageRepository extends JpaRepository<Stage, Long> {
-    Page<Stage> findByStageNameContaining(String keyword, Pageable pageable);
+	Page<Stage> findByStageNameContaining(String keyword, Pageable pageable);
 
 	@Query("SELECT s FROM Stage s LEFT JOIN FETCH s.seats WHERE s.id = :id")
 	Optional<Stage> findByIdWithSeats(@Param("id") Long id);

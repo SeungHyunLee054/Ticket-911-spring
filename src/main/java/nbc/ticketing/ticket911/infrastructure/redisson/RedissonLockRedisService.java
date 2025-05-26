@@ -58,10 +58,16 @@ public class RedissonLockRedisService implements LockRedisService {
 		}
 	}
 
-	private RuntimeException wrapThrowable(Throwable t) {
-		if (t instanceof LockRedisException e) return e;
-		if (t instanceof RuntimeException e) return e;
-		if (t instanceof Error e) throw e;
+	private RuntimeException wrapThrowable(Throwable throwable) {
+		if (throwable instanceof LockRedisException e) {
+			return e;
+		}
+		if (throwable instanceof RuntimeException e) {
+			return e;
+		}
+		if (throwable instanceof Error e) {
+			throw e;
+		}
 		return new LockRedisException(LockRedisExceptionCode.LOCK_PROCEED_FAIL);
 	}
 }

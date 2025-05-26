@@ -137,10 +137,11 @@ class BookingControllerTestByMySQL {
 		for (Future<String> result : results) {
 			try {
 				String outcome = result.get();
-				if (outcome.equals("성공"))
+				if (outcome.equals("성공")) {
 					successCount++;
-				else
+				} else {
 					failureCount++;
+				}
 				System.out.println(outcome);
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-
 import nbc.ticketing.ticket911.common.annotation.LettuceMultiLock;
 import nbc.ticketing.ticket911.common.annotation.RedissonMultiLock;
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
