@@ -23,3 +23,4 @@ public interface ConcertSeatRepository extends JpaRepository<ConcertSeat, Long> 
 	@Query("SELECT s FROM ConcertSeat s WHERE s.id IN :ids")
 	List<ConcertSeat> findAllByIdInWithLock(@Param("ids") List<Long> ids);
 }
+terstset
