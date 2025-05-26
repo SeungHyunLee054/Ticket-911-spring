@@ -23,6 +23,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.common.aop.RedissonMultiLockAspect;
@@ -52,7 +53,7 @@ public class BookingConcurrencyTest {
 
 	@Container
 	static GenericContainer<?> redis =
-		new GenericContainer<>("redis:6.2-alpine")
+		new GenericContainer<>(DockerImageName.parse("redis:7.0-alpine"))
 			.withExposedPorts(6379)
 	 		.waitingFor(Wait.forListeningPort())
 			.withStartupAttempts(5);
