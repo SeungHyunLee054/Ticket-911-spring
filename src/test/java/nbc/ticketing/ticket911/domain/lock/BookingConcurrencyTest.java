@@ -44,25 +44,25 @@ import nbc.ticketing.ticket911.domain.user.entity.User;
 import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @Slf4j
-@Testcontainers
+// @Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest
 @Import(RedissonMultiLockAspect.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class BookingConcurrencyTest {
 
-	@Container
-	static GenericContainer<?> redis =
-		new GenericContainer<>(DockerImageName.parse("redis:7.0-alpine"))
-			.withExposedPorts(6379)
-	 		.waitingFor(Wait.forListeningPort())
-			.withStartupAttempts(5);
-
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry reg) {
-		reg.add("spring.data.redis.host", redis::getHost);
-		reg.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
+	// @Container
+	// static GenericContainer<?> redis =
+	// 	new GenericContainer<>(DockerImageName.parse("redis:7.0-alpine"))
+	// 		.withExposedPorts(6379)
+	//  		.waitingFor(Wait.forListeningPort())
+	// 		.withStartupAttempts(5);
+	//
+	// @DynamicPropertySource
+	// static void redisProperties(DynamicPropertyRegistry reg) {
+	// 	reg.add("spring.data.redis.host", redis::getHost);
+	// 	reg.add("spring.data.redis.port", redis::getFirstMappedPort);
+	// }
 
 	@Autowired
 	private BookingService bookingService;
