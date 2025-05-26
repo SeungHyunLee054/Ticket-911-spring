@@ -17,13 +17,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import lombok.extern.slf4j.Slf4j;
 import nbc.ticketing.ticket911.common.aop.RedissonMultiLockAspect;
@@ -44,25 +37,11 @@ import nbc.ticketing.ticket911.domain.user.entity.User;
 import nbc.ticketing.ticket911.domain.user.repository.UserRepository;
 
 @Slf4j
-// @Testcontainers
 @ActiveProfiles("test")
 @SpringBootTest
 @Import(RedissonMultiLockAspect.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 public class BookingConcurrencyTest {
-
-	// @Container
-	// static GenericContainer<?> redis =
-	// 	new GenericContainer<>(DockerImageName.parse("redis:7.0-alpine"))
-	// 		.withExposedPorts(6379)
-	//  		.waitingFor(Wait.forListeningPort())
-	// 		.withStartupAttempts(5);
-	//
-	// @DynamicPropertySource
-	// static void redisProperties(DynamicPropertyRegistry reg) {
-	// 	reg.add("spring.data.redis.host", redis::getHost);
-	// 	reg.add("spring.data.redis.port", redis::getFirstMappedPort);
-	// }
 
 	@Autowired
 	private BookingService bookingService;
