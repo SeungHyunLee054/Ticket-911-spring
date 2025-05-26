@@ -1,7 +1,6 @@
 package nbc.ticketing.ticket911.domain.lock;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import nbc.ticketing.ticket911.domain.auth.vo.AuthUser;
 import nbc.ticketing.ticket911.domain.booking.application.BookingService;
@@ -54,7 +52,7 @@ class LettuceLockManagerTest {
 	@Autowired
 	private BookingDomainService bookingDomainService;
 
-	@MockitoBean
+	@Autowired
 	private UserDomainService userDomainService;
 	@Autowired
 	private ConcertSeatRepository concertSeatRepository;
@@ -83,9 +81,6 @@ class LettuceLockManagerTest {
 				.isDeleted(false)
 				.build()
 		);
-
-		when(userDomainService.findActiveUserById(savedUser.getId()))
-			.thenReturn(savedUser);
 
 		Stage savedStage = stageRepository.save(
 			Stage.builder()
@@ -155,6 +150,7 @@ class LettuceLockManagerTest {
 
 		assertThat(resultStats.getOrDefault("성공", 0L)).isEqualTo(1);
 	}
+
 	@Test
 	void 동시_예매_테스트_좌석은_하나만_성공해야_한다_AOP기반() throws InterruptedException {
 		int threadCount = 100;
